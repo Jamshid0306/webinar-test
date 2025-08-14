@@ -1,8 +1,17 @@
 [build]
   command = "npm run build"
-  publish = "dist"  # Agar React bo'lsa. Vue (Vite) bo'lsa "dist"
-  functions = "netlify/functions"  # Agar serverless functions ishlatilsa
+  publish = "dist"
+  functions = "netlify/functions"
 
+# API redirect backendga
+[[redirects]]
+  from = "/api/*"
+  to = "http://127.0.0.1:8000/:splat"
+  status = 200
+  force = true
+
+
+# Frontend routing
 [[redirects]]
   from = "/*"
   to = "/index.html"

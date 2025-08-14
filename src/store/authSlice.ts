@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        "http://0.0.0.0:8000/login",
+        "https://3f9bedee2738.ngrok-free.app/login",
         data
       );
       if (response.data.access_token) {
@@ -48,7 +48,7 @@ export const registerUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        "http://0.0.0.0:8000/register",
+        "https://3f9bedee2738.ngrok-free.app/register",
         data
       );
 

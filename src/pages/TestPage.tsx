@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
 import { fetchOptions, submitSelection } from "../store/testSlice";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaChevronDown } from "react-icons/fa";
 
 export default function TestPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,29 +19,18 @@ export default function TestPage() {
   const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(
     null
   );
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const loadOptions = async () => {
-      if (!options || options.length === 0)
-        await dispatch(fetchOptions()).unwrap();
-    };
-    loadOptions();
+    if (!options || options.length === 0) dispatch(fetchOptions());
   }, [dispatch]);
 
   useEffect(() => {
     if (selectedBusinessId !== null) {
-      const loadQuestions = async () => {
-        try {
-          const res = await dispatch(
-            submitSelection(selectedBusinessId)
-          ).unwrap();
-          setQuestions(Array.isArray(res) ? res : []);
-          setCurrentIndex(0);
-        } catch {
-          setQuestions([]);
-        }
-      };
-      loadQuestions();
+      dispatch(submitSelection(selectedBusinessId))
+        .unwrap()
+        .then((res) => setQuestions(Array.isArray(res) ? res : []))
+        .finally(() => setCurrentIndex(0));
     }
   }, [selectedBusinessId, dispatch]);
 
@@ -63,7 +53,6 @@ export default function TestPage() {
 
   const isSubscribed = () =>
     localStorage.getItem("telegram_subscribed") === "true";
-
   const renderAdvice = () =>
     isSubscribed() ? (
       <p className="mt-4 text-green-600 font-semibold text-lg">
@@ -90,18 +79,19 @@ export default function TestPage() {
       ? Math.round((answeredCount / questions.length) * 100)
       : 0;
 
-  const handleBusinessSelect = (id: number) => {
-    setSelectedBusinessId(id);
-    setShowSelectModal(false);
+  const handleSelectConfirm = () => {
+    if (selectedBusinessId !== null) {
+      setShowSelectModal(false);
+      dispatch(submitSelection(selectedBusinessId));
+    }
   };
 
   return (
     <div className="h-screen relative bg-gradient-to-r from-purple-100 via-pink-100 to-red-100 p-4 flex items-center justify-center">
-      {/* SELECT MODAL */}
+      {/* CUSTOM SELECT MODAL */}
       <AnimatePresence>
         {showSelectModal && options.length > 0 && (
           <motion.div
-            key="modal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -117,27 +107,79 @@ export default function TestPage() {
               <h2 className="text-2xl font-bold mb-6 text-gray-800">
                 Select a Business
               </h2>
-              <div className="flex flex-col gap-4 w-full">
-                {options.map((opt) => (
-                  <motion.button
-                    key={opt.id}
-                    onClick={() => handleBusinessSelect(opt.id)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-full py-3 bg-purple-500 text-white rounded-xl shadow-md hover:bg-purple-600 font-semibold transition"
-                  >
-                    {opt.types}
-                  </motion.button>
-                ))}
+              <div className="w-full relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="w-full flex justify-between items-center bg-purple-500 text-white px-4 py-3 rounded-xl shadow-md hover:bg-purple-600 transition-all"
+                >
+                  {selectedBusinessId
+                    ? options.find((opt) => opt.id === selectedBusinessId)
+                        ?.types
+                    : "Choose business"}
+                  <FaChevronDown
+                    className={`transition-transform ${
+                      dropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {dropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute top-full left-0 mt-2 w-full bg-white rounded-xl shadow-lg z-50 overflow-auto max-h-[400px]"
+                    >
+                      {options.map((opt) => (
+                        <motion.button
+                          key={opt.id}
+                          onClick={() => {
+                            setSelectedBusinessId(opt.id);
+                            setDropdownOpen(false); // dropdown tanlagandan keyin yopiladi
+                          }}
+                          whileHover={{
+                            scale: 1.03,
+                            backgroundColor: "#EDE9FE",
+                          }}
+                          className={`w-full text-left px-4 py-3 transition-all ${
+                            selectedBusinessId === opt.id
+                              ? "bg-purple-200 font-semibold"
+                              : ""
+                          }`}
+                        >
+                          {opt.types}
+                        </motion.button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
+              <button
+                disabled={selectedBusinessId === null}
+                onClick={handleSelectConfirm}
+                className={`mt-6 w-full px-6 py-3 rounded-xl shadow-md text-white font-semibold transition ${
+                  selectedBusinessId
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+              >
+                Tanlash
+              </button>
+
+              <p className="mt-4 text-gray-600 text-sm text-center">
+                Tanlash tugmasi orqali testni boshlashingiz mumkin
+              </p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* TEST QUESTIONS */}
-      {!showSelectModal && questions.length > 0 && (
-        <div className="bg-white rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative overflow-hidden">
+      {!showSelectModal && questions.length > 0 && !showResult && (
+        <div className="bg-white  rounded-3xl p-8 w-full max-w-3xl shadow-2xl relative overflow-hidden">
           <motion.div
             key={currentIndex}
             initial={{ opacity: 0, x: 100 }}
@@ -196,6 +238,92 @@ export default function TestPage() {
                 className="h-4 bg-purple-500 rounded-full"
               />
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* RESULT MODAL */}
+      {/* RESULT MODAL */}
+      {showResult && (
+        <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-purple-100 via-pink-100 to-red-100 p-6">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl flex flex-col items-center"
+          >
+            <h1 className="text-4xl font-extrabold mb-6 text-purple-700">
+              Test Completed
+            </h1>
+
+            <div className="relative w-52 h-52 mb-6">
+              <svg height={200} width={200}>
+                <defs>
+                  <linearGradient
+                    id="gradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="0%"
+                  >
+                    <stop offset="0%" stopColor="#a78bfa" />
+                    <stop offset="100%" stopColor="#f472b6" />
+                  </linearGradient>
+                </defs>
+                <circle
+                  stroke="#e5e7eb"
+                  fill="transparent"
+                  strokeWidth={12}
+                  r={88}
+                  cx={100}
+                  cy={100}
+                />
+                <motion.circle
+                  fill="transparent"
+                  strokeWidth={12}
+                  strokeLinecap="round"
+                  r={88}
+                  cx={100}
+                  cy={100}
+                  transform={`rotate(-90 100 100)`}
+                  initial={{ strokeDashoffset: 553 }}
+                  animate={{
+                    strokeDashoffset: 553 - (calculateScore() / 100) * 553,
+                    stroke:
+                      calculateScore() <= 30
+                        ? "#f87171" // qizil
+                        : calculateScore() <= 60
+                        ? "#facc15" // sariq
+                        : "#34d399", // yashil
+                  }}
+                  transition={{ duration: 1.5, ease: "linear" }}
+                  strokeDasharray="553"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-5xl font-bold text-purple-600">
+                  {calculateScore()}%
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowAdvice(!showAdvice)}
+              className="px-6 py-3 bg-green-500 text-white rounded-xl shadow-md hover:bg-green-600 transition font-semibold text-lg"
+            >
+              Maslahatlar
+            </button>
+
+            {showAdvice && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="mt-4 text-center"
+              >
+                {renderAdvice()}
+              </motion.div>
+            )}
           </motion.div>
         </div>
       )}

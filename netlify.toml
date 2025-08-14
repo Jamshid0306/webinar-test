@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "build"  # Agar React bo'lsa. Vue (Vite) bo'lsa "dist"
+  publish = "dist"  # Agar React bo'lsa. Vue (Vite) bo'lsa "dist"
   functions = "netlify/functions"  # Agar serverless functions ishlatilsa
 
 [[redirects]]

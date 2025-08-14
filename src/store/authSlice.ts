@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/login",
+        "http://0.0.0.0:8000/login",
         data
       );
       if (response.data.access_token) {
@@ -48,7 +48,7 @@ export const registerUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/register",
+        "http://0.0.0.0:8000/register",
         data
       );
 

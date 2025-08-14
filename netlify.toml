@@ -6,7 +6,7 @@
 # API redirect backendga
 [[redirects]]
   from = "/api/*"
-  to = "http://127.0.0.1:8000/:splat"
+  to = "http://0.0.0.0:8000/:splat"
   status = 200
   force = true
 

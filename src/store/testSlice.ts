@@ -28,14 +28,20 @@ const initialState: TestState = {
   error: null,
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const fetchOptions = createAsyncThunk(
   "test/fetchOptions",
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("access");
-      const res = await axios.get("http://127.0.0.1:8000/bussiness-options", {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await axios.get(`${API_BASE_URL}/bussiness-options`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
+        },
       });
+      console.log("fetchOptions response:", res.data);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Server error");
@@ -48,13 +54,14 @@ export const submitSelection = createAsyncThunk(
   async (id: number, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("access");
-      const res = await axios.get(`http://127.0.0.1:8000/test/${id}`, {
+      const res = await axios.get(`${API_BASE_URL}/test/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
+          "ngrok-skip-browser-warning": "true",
         },
       });
-      return res.data; // shu yerda 10 ta savol va javoblar keladi
+      return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Server error");
     }
@@ -68,7 +75,10 @@ const testSlice = createSlice({
     setSelected: (state, action: PayloadAction<number>) => {
       state.selected = action.payload;
     },
-    setAnswer: (state, action: PayloadAction<{ id: number; answer: string }>) => {
+    setAnswer: (
+      state,
+      action: PayloadAction<{ id: number; answer: string }>
+    ) => {
       state.answers[action.payload.id] = action.payload.answer;
     },
     resetTest: (state) => {
@@ -97,7 +107,7 @@ const testSlice = createSlice({
       })
       .addCase(submitSelection.fulfilled, (state, action) => {
         state.loading = false;
-        state.questions = action.payload; // 10 ta savol va javoblar
+        state.questions = action.payload;
       })
       .addCase(submitSelection.rejected, (state, action) => {
         state.loading = false;

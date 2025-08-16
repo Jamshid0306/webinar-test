@@ -14,6 +14,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
 };
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -23,7 +24,7 @@ export const loginUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        "https://f8d70ae48aa9.ngrok-free.app/login",
+        `${API_BASE_URL}/login`,
         data
       );
       if (response.data.access_token) {
@@ -48,7 +49,7 @@ export const registerUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(
-        "https://f8d70ae48aa9.ngrok-free.app/register",
+        `${API_BASE_URL}/register`,
         data
       );
 

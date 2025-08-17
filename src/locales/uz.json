@@ -1,0 +1,22 @@
+{
+    "select_language": "Tilni tanlang",
+    "uzbek": "O‘zbekcha",
+    "russian": "Русский",
+    "select_business": "Biznes turini tanlang",
+    "start": "Boshlash",
+    "choose_business": "Biznesni tanlang",
+    "next": "Keyingi",
+    "finish": "Yakunlash",
+    "previous": "Oldingi",
+    "test_completed": "Test yakunlandi!",
+    "advice_prompt": "Maslahat olish uchun Telegram va Instagram sahifamizga obuna bo‘ling!",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "get_advice": "Maslahat olish",
+    "getting_advice": "Maslahatlar olinmoqda...",
+    "error_subscribe": "Iltimos, avval Telegram va Instagram kanalimizga obuna bo'ling!",
+    "error_occurred": "Xatolik yuz berdi!",
+    "retry": "Qaytadan urinish",
+    "advice_not_found": "Maslahat topilmadi"
+  }
+  

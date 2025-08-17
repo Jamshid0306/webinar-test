@@ -7,6 +7,7 @@ import Register from "./pages/RegisterPage";
 import Notification from "./components/Notification";
 import { RootState } from "./store/store";
 import TestPage from "./pages/TestPage";
+import "./i18n/index";
 
 function App() {
   const notification = useSelector((state: RootState) => state.notification);

@@ -1,0 +1,22 @@
+{
+    "select_language": "Выберите язык",
+    "uzbek": "O‘zбекcha",
+    "russian": "Русский",
+    "select_business": "Выберите тип бизнеса",
+    "start": "Начать",
+    "choose_business": "Выберите бизнес",
+    "next": "Следующий",
+    "finish": "Завершить",
+    "previous": "Предыдущий",
+    "test_completed": "Тест завершен!",
+    "advice_prompt": "Для получения совета подпишитесь на наш Telegram и Instagram!",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "get_advice": "Получить совет",
+    "getting_advice": "Получение совета...",
+    "error_subscribe": "Пожалуйста, сначала подпишитесь на наш Telegram и Instagram!",
+    "error_occurred": "Произошла ошибка!",
+    "retry": "Попробовать снова",
+    "advice_not_found": "Совет не найден"
+  }
+  

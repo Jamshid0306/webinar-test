@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+
 interface AuthState {
   user: { phone_number: string; token: string; username: string } | null;
   isLoggedIn: boolean;
@@ -14,6 +14,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
 };
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const loginUser = createAsyncThunk(
@@ -23,10 +24,7 @@ export const loginUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/login`,
-        data
-      );
+      const response = await axios.post(`${API_BASE_URL}/login`, data);
       if (response.data.access_token) {
         localStorage.setItem("access", response.data.access_token);
       }
@@ -48,19 +46,20 @@ export const registerUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/register`,
-        data
-      );
-
-      return response.data;
+      const response = await axios.post(`${API_BASE_URL}/register`, data);
+      if (response.data.access_token) {
+        localStorage.setItem("access", response.data.access_token);
+      }
+      return {
+        phone_number: response.data.user.phone_number,
+        username: response.data.user.username,
+        token: response.data.access_token,
+      };
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Server error");
     }
   }
 );
-
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -76,7 +75,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -93,15 +91,13 @@ const authSlice = createSlice({
         ) => {
           state.loading = false;
           state.user = action.payload;
-          state.isLoggedIn = true;
+          state.isLoggedIn = !!action.payload.token;
         }
       )
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-
-      // Register
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,6 +114,7 @@ const authSlice = createSlice({
         ) => {
           state.loading = false;
           state.user = action.payload;
+          state.isLoggedIn = !!action.payload.token;
         }
       )
       .addCase(registerUser.rejected, (state, action) => {

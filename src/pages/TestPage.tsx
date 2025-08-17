@@ -126,7 +126,7 @@ export default function TestPage() {
               className="bg-gradient-to-br from-white to-purple-50 rounded-2xl md:rounded-3xl p-6 md:p-8 w-[95%] sm:w-[90%] md:w-full max-w-md shadow-2xl flex flex-col items-center"
             >
               <h2 className="text-2xl md:text-3xl font-extrabold mb-4 md:mb-6 text-purple-700 text-center">
-              {t("select_language")}
+                {t("select_language")}
               </h2>
               <div className="flex gap-4 mb-6">
                 {LANG_OPTIONS.map((lang) => (
@@ -347,9 +347,9 @@ export default function TestPage() {
                 </motion.button>
               </>
             ) : (
-              <p className="text-gray-800 font-medium text-base md:text-lg">
+              <div className="w-full max-h-[60vh] overflow-y-auto mt-4 p-4 bg-green-50 rounded-xl md:rounded-2xl shadow-inner text-sm md:text-base text-gray-800">
                 {advice}
-              </p>
+              </div>
             )}
           </motion.div>
         </motion.div>

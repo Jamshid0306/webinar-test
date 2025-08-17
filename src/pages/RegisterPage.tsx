@@ -17,7 +17,6 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const notification = useSelector((state: RootState) => state.notification);
 
-
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
     if (value.startsWith("998")) value = value.slice(3);
@@ -34,16 +33,15 @@ export default function RegisterForm() {
     const result = await dispatch(
       registerUser({ username, phone_number, password })
     );
-    if (registerUser.fulfilled.match(result) && result.payload?.message) {
+    console.log(result);
+
+    if (registerUser.fulfilled.match(result) && result.payload?.token) {
       dispatch(
         setNotification({
           message: "User created successfully!",
           type: "success",
         })
       );
-      setUsername("");
-      setPhone_number("+998 ");
-      setPassword("");
       navigate("/auth");
     } else {
       dispatch(

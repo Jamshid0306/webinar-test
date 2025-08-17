@@ -48,19 +48,29 @@ export const fetchOptions = createAsyncThunk(
     }
   }
 );
-
+// submitSelection uchun parametri endi obyekt
 export const submitSelection = createAsyncThunk(
   "test/submitSelection",
-  async (id: number, { rejectWithValue }) => {
+  async (
+    payload: { businessId: number; lang: string },
+    { rejectWithValue }
+  ) => {
     try {
       const token = localStorage.getItem("access");
-      const res = await axios.get(`${API_BASE_URL}/test/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "ngrok-skip-browser-warning": "true",
-        },
-      });
+      const res = await axios.get(
+        `${API_BASE_URL}/test/${payload.businessId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          params: {
+            lang: payload.lang, // query param sifatida yuboriladi
+          },
+        }
+      );
+
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Server error");

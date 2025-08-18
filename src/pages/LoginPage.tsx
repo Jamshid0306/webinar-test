@@ -15,10 +15,6 @@ export default function LoginForm() {
   const [localError, setLocalError] = useState<string | null>(null);
   const { loading } = useSelector((state: RootState) => state.auth);
 
-  useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (token) navigate("/"); 
-  }, [navigate]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");

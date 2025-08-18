@@ -45,8 +45,10 @@ export default function TestPage() {
   }, [selectedLang, i18n]);
 
   useEffect(() => {
-    if (!options || options.length === 0) dispatch(fetchOptions());
-  }, [dispatch]);
+    if (!options || options.length === 0) {
+      dispatch(fetchOptions(selectedLang)); // <--- til argument sifatida beriladi
+    }
+  }, [dispatch, options, selectedLang]);
 
   useEffect(() => {
     if (selectedBusinessId !== null) {
@@ -106,6 +108,12 @@ export default function TestPage() {
       setLoadingAdvice(false);
     }
   };
+  useEffect(() => {
+    if (selectedLang) {
+      dispatch(fetchOptions(selectedLang));
+      setSelectedBusinessId(null); // til o'zgarganda tanlangan biznesni tozalash
+    }
+  }, [selectedLang, dispatch]);
 
   return (
     <div className="min-h-screen relative bg-gradient-to-r from-purple-200 via-pink-100 to-red-200 p-4 md:p-6 flex items-center justify-center">

@@ -36,7 +36,10 @@ export const fetchOptions = createAsyncThunk(
     try {
       const token = localStorage.getItem("access");
       const res = await axios.get(`${API_BASE_URL}/bussiness-options`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
+        },
         params: { lang }, // <--- query param sifatida yuborish
       });
       return res.data;

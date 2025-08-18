@@ -34,6 +34,15 @@ export default function TestPage() {
   const TELEGRAM_LINK = "https://t.me/ravshanpulatjon";
   const INSTAGRAM_LINK =
     "https://www.instagram.com/ravshan_pulatjon?igsh=ano5ZWRzc2Z6eDV4";
+  type Option = {
+    id: number;
+    types: string;
+  };
+
+  const optionsArray: Option[] =
+    options && !Array.isArray(options)
+      ? (Object.values(options) as Option[])
+      : (options as Option[]);
 
   const LANG_OPTIONS = [
     { id: "uz", label: t("uzbek") },
@@ -46,17 +55,14 @@ export default function TestPage() {
 
   useEffect(() => {
     if (!options || options.length === 0) {
-      dispatch(fetchOptions(selectedLang)); // <--- til argument sifatida beriladi
+      dispatch(fetchOptions(selectedLang));
     }
   }, [dispatch, options, selectedLang]);
 
   useEffect(() => {
     if (selectedBusinessId !== null) {
       dispatch(
-        submitSelection({
-          businessId: selectedBusinessId!,
-          lang: selectedLang!,
-        })
+        submitSelection({ businessId: selectedBusinessId, lang: selectedLang })
       )
         .unwrap()
         .then((res) => setQuestions(Array.isArray(res) ? res : []))
@@ -96,7 +102,7 @@ export default function TestPage() {
       const res = await fetch(`${API_BASE_URL}/ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: answersArray, lang: selectedLang }), // <--- tilni yuboramiz
+        body: JSON.stringify({ answers: answersArray, lang: selectedLang }),
       });
 
       const data = await res.json();
@@ -108,10 +114,11 @@ export default function TestPage() {
       setLoadingAdvice(false);
     }
   };
+
   useEffect(() => {
     if (selectedLang) {
       dispatch(fetchOptions(selectedLang));
-      setSelectedBusinessId(null); // til o'zgarganda tanlangan biznesni tozalash
+      setSelectedBusinessId(null);
     }
   }, [selectedLang, dispatch]);
 
@@ -119,7 +126,7 @@ export default function TestPage() {
     <div className="min-h-screen relative bg-gradient-to-r from-purple-200 via-pink-100 to-red-200 p-4 md:p-6 flex items-center justify-center">
       {/* Til va biznes tanlash modal */}
       <AnimatePresence>
-        {showSelectModal && options.length > 0 && (
+        {showSelectModal && optionsArray?.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -160,8 +167,8 @@ export default function TestPage() {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="w-full flex justify-between items-center bg-purple-500 text-white px-4 md:px-5 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md hover:shadow-lg hover:bg-purple-600 transition-all text-base md:text-lg"
                 >
-                  {selectedBusinessId
-                    ? options.find((opt) => opt.id === selectedBusinessId)
+                  {selectedBusinessId !== null
+                    ? optionsArray.find((opt) => opt.id === selectedBusinessId)
                         ?.types
                     : t("choose_business")}
                   <FaChevronDown
@@ -170,6 +177,7 @@ export default function TestPage() {
                     }`}
                   />
                 </button>
+
                 <AnimatePresence>
                   {dropdownOpen && (
                     <motion.div
@@ -179,7 +187,7 @@ export default function TestPage() {
                       transition={{ duration: 0.3 }}
                       className="absolute top-full left-0 mt-2 w-full bg-white rounded-xl md:rounded-2xl shadow-xl z-50 overflow-auto max-h-[250px] md:max-h-[350px] border border-purple-100"
                     >
-                      {options.map((opt) => (
+                      {optionsArray.map((opt) => (
                         <motion.button
                           key={opt.id}
                           onClick={() => {
@@ -205,14 +213,14 @@ export default function TestPage() {
               </div>
 
               <motion.button
-                disabled={!selectedBusinessId || !selectedLang}
+                disabled={selectedBusinessId === null || !selectedLang}
                 whileHover={{
-                  scale: selectedBusinessId && selectedLang ? 1.05 : 1,
+                  scale: selectedBusinessId !== null && selectedLang ? 1.05 : 1,
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   setShowSelectModal(false);
-                  if (selectedBusinessId && selectedLang) {
+                  if (selectedBusinessId !== null && selectedLang) {
                     dispatch(
                       submitSelection({
                         businessId: selectedBusinessId,
@@ -227,7 +235,7 @@ export default function TestPage() {
                   }
                 }}
                 className={`mt-5 md:mt-6 w-full px-5 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md text-white font-semibold text-base md:text-lg transition ${
-                  selectedBusinessId && selectedLang
+                  selectedBusinessId !== null && selectedLang
                     ? "bg-green-500 hover:bg-green-600"
                     : "bg-gray-300 cursor-not-allowed"
                 }`}

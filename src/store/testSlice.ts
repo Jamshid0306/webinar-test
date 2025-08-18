@@ -32,23 +32,20 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchOptions = createAsyncThunk(
   "test/fetchOptions",
-  async (_, { rejectWithValue }) => {
+  async (lang: string, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("access");
       const res = await axios.get(`${API_BASE_URL}/bussiness-options`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "ngrok-skip-browser-warning": "true",
-        },
+        headers: { Authorization: `Bearer ${token}` },
+        params: { lang }, // <--- query param sifatida yuborish
       });
-      console.log("fetchOptions response:", res.data);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Server error");
     }
   }
 );
-// submitSelection uchun parametri endi obyekt
+
 export const submitSelection = createAsyncThunk(
   "test/submitSelection",
   async (

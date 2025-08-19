@@ -2,11 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 interface AuthState {
-  user: { phone_number: string; token: string; username: string } | null;
+  user: { phone_number: string; token?: string; fullname?: string; age?: string } | null;
   isLoggedIn: boolean;
   error: string | null;
   loading: boolean;
 }
+
+
 
 const initialState: AuthState = {
   user: null,
@@ -17,8 +19,9 @@ const initialState: AuthState = {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// 🔹 Faqat login (o‘zgartirmadik)
 export const loginUser = createAsyncThunk(
-  "auth/loginUser",
+  "/register",
   async (
     data: { phone_number: string; password: string },
     { rejectWithValue }
@@ -30,7 +33,8 @@ export const loginUser = createAsyncThunk(
       }
       return {
         phone_number: response.data.user.phone_number,
-        username: response.data.user.username,
+        fullname: response.data.user.fullname,
+        age: response.data.user.age,
         token: response.data.access_token,
       };
     } catch (err: any) {
@@ -39,20 +43,23 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// 🔹 Yangi: faqat fullname, age, phone_number yuboradigan ro‘yxatdan o‘tish
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (
-    data: { phone_number: string; username: string; password: string },
+    data: { fullname: string; age: string; phone_number: string },
     { rejectWithValue }
   ) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/register`, data);
+      // Agar token bo‘lsa localStorage saqlash (ixtiyoriy)
       if (response.data.access_token) {
         localStorage.setItem("access", response.data.access_token);
       }
       return {
         phone_number: response.data.user.phone_number,
-        username: response.data.user.username,
+        fullname: response.data.user.fullname,
+        age: response.data.user.age,
         token: response.data.access_token,
       };
     } catch (err: any) {
@@ -75,6 +82,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -85,8 +93,9 @@ const authSlice = createSlice({
           state,
           action: PayloadAction<{
             phone_number: string;
-            token: string;
-            username: string;
+            token?: string;
+            fullname?: string;
+            age?: string;
           }>
         ) => {
           state.loading = false;
@@ -98,6 +107,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
+
+      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -108,8 +119,9 @@ const authSlice = createSlice({
           state,
           action: PayloadAction<{
             phone_number: string;
-            token: string;
-            username: string;
+            token?: string;
+            fullname?: string;
+            age?: string;
           }>
         ) => {
           state.loading = false;

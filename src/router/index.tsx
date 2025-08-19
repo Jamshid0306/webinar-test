@@ -7,10 +7,10 @@ import HomePage from "../pages/HomePage";
 import React from "react";
 
 export const router = createBrowserRouter([
-  {
-    path: "/register",
-    element: <Register />,
-  },
+  // {
+  //   path: "/register",
+  //   element: <Register />,
+  // },
   {
     path: "/auth",
     element: <Login />,

@@ -396,222 +396,211 @@ export default function TestPage() {
 
       {/* Results section */}
       {showResult && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-2xl"
-        >
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white relative rounded-3xl min-h-[400px] p-6 md:p-8 shadow-2xl text-center border border-gray-100"
-          >
-            {!showAdvice ? (
-              <>
-                <div className="mb-6">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring" }}
-                    className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-10 w-10 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </motion.div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                    {t("test_completed")}
-                  </h1>
-                  <p className="text-gray-600">{t("thanks_for_completing")}</p>
-                </div>
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.5 }}
+    className="w-full max-w-2xl px-4 sm:px-6 mx-auto"
+  >
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.2 }}
+      className="bg-white relative rounded-2xl md:rounded-3xl min-h-[400px] p-6 md:p-8 shadow-xl md:shadow-2xl text-center border border-gray-100"
+    >
+      {!showAdvice ? (
+        <>
+          {/* Success Header */}
+          <div className="mb-6 md:mb-8">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring" }}
+              className="w-16 h-16 md:w-20 md:h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 md:h-10 md:w-10 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </motion.div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-2">
+              {t("test_completed")}
+            </h1>
+            <p className="text-sm md:text-base text-gray-600">
+              {t("thanks_for_completing")}
+            </p>
+          </div>
 
-                <div className="mb-6">
-                  <p className="text-gray-700 mb-4">
-                    {t("subscribe_for_advice")}
-                  </p>
-                  <div className="flex flex-col h-[50px] sm:flex-row gap-4 justify-center relative">
-                    <a
-                      href={TELEGRAM_LINK}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => setTelegramClicked(true)}
-                      className="absolute left-[25%]"
-                    >
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => {
-                          setTelegramClicked(true);
-                          window.open(TELEGRAM_LINK, "_blank");
-                        }}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                          telegramClicked
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                        }`}
-                      >
-                        <FaTelegramPlane />
-                        <span>{t("telegram")}</span>
-                        {telegramClicked && (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        )}
-                      </motion.button>
-                    </a>
-                    <a
-                      href={INSTAGRAM_LINK}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="cursor-pointer absolute right-[25%]"
-                      onClick={() => {
-                        setInstagramClicked(true);
-                        window.open(INSTAGRAM_LINK, "_blank");
-                      }}
-                    >
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => {
-                          setInstagramClicked(true);
-                          window.open(INSTAGRAM_LINK, "_blank");
-                        }}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                          instagramClicked
-                            ? "bg-green-100 text-green-800"
-                            : "bg-pink-100 text-pink-800 hover:bg-pink-200"
-                        }`}
-                      >
-                        <FaInstagram />
-                        <span>{t("instagram")}</span>
-                        {instagramClicked && (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        )}
-                      </motion.button>
-                    </a>
-                  </div>
-                </div>
-
-                {errorMsg && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-red-500 mb-4"
+          {/* Social Media Buttons */}
+          <div className="mb-6 md:mb-8">
+            <p className="text-sm md:text-base text-gray-700 mb-3 md:mb-4">
+              {t("subscribe_for_advice")}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
+              <motion.a
+                href={TELEGRAM_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setTelegramClicked(true)}
+                className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 rounded-lg ${
+                  telegramClicked
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
+                }`}
+              >
+                <FaTelegramPlane className="text-lg" />
+                <span>{t("telegram")}</span>
+                {telegramClicked && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-green-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    {errorMsg}
-                  </motion.p>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
                 )}
+              </motion.a>
 
-                <motion.button
-                  onClick={handleAdviceClick}
-                  disabled={
-                    loadingAdvice || !telegramClicked || !instagramClicked
-                  }
-                  whileHover={{ scale: loadingAdvice ? 1 : 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`w-[90%] curosr-pointer absolute py-3 rounded-lg bottom-[20px] left-[50%] translate-x-[-50%] font-medium ${
-                    loadingAdvice
-                      ? "bg-gray-200 text-gray-500"
-                      : !telegramClicked || !instagramClicked
-                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
-                  }`}
+              <motion.a
+                href={INSTAGRAM_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setInstagramClicked(true)}
+                className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 rounded-lg ${
+                  instagramClicked
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-pink-50 text-pink-700 hover:bg-pink-100 border border-pink-200"
+                }`}
+              >
+                <FaInstagram className="text-lg" />
+                <span>{t("instagram")}</span>
+                {instagramClicked && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-green-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </motion.a>
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {errorMsg && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-sm md:text-base text-red-500 mb-4"
+            >
+              {errorMsg}
+            </motion.p>
+          )}
+
+          {/* Get Advice Button */}
+          <motion.button
+            onClick={handleAdviceClick}
+            disabled={loadingAdvice || !telegramClicked || !instagramClicked}
+            whileHover={{ scale: loadingAdvice ? 1 : 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`w-full md:w-[90%] py-3 rounded-lg font-medium mt-4 md:absolute md:bottom-6 md:left-1/2 md:transform md:-translate-x-1/2 ${
+              loadingAdvice
+                ? "bg-gray-100 text-gray-500"
+                : !telegramClicked || !instagramClicked
+                ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+            }`}
+          >
+            {loadingAdvice ? (
+              <span className="flex items-center justify-center space-x-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
                 >
-                  {loadingAdvice ? (
-                    <span className="flex items-center justify-center space-x-2">
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      <span>{t("getting_advice")}</span>
-                    </span>
-                  ) : (
-                    t("get_personalized_advice")
-                  )}
-                </motion.button>
-              </>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <span>{t("getting_advice")}</span>
+              </span>
             ) : (
-              <div>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    {t("your_personalized_advice")}
-                  </h2>
-                  <p className="text-gray-600">{t("based_on_your_answers")}</p>
-                </div>
-                <div className="bg-blue-50 rounded-xl p-4 md:p-6 text-left text-gray-700 whitespace-pre-line">
-                  {advice}
-                </div>
-                <button
-                  onClick={() => {
-                    setShowResult(false);
-                    setShowSelectModal(true);
-                    setSelectedBusinessId(null);
-                    setSelectedAnswers({});
-                    setCurrentIndex(0);
-                    setShowAdvice(false);
-                  }}
-                  className="mt-6 text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  {t("take_another_test")}
-                </button>
-              </div>
+              t("get_personalized_advice")
             )}
-          </motion.div>
-        </motion.div>
+          </motion.button>
+        </>
+      ) : (
+        /* Advice Display */
+        <div className="h-full flex flex-col">
+          <div className="mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+              {t("your_personalized_advice")}
+            </h2>
+            <p className="text-sm md:text-base text-gray-600">
+              {t("based_on_your_answers")}
+            </p>
+          </div>
+          <div className="bg-blue-50 rounded-xl p-4 md:p-6 text-left text-gray-700 whitespace-pre-line flex-grow overflow-y-auto max-h-[300px] md:max-h-[400px] text-sm md:text-base">
+            {advice}
+          </div>
+          <button
+            onClick={() => {
+              setShowResult(false);
+              setShowSelectModal(true);
+              setSelectedBusinessId(null);
+              setSelectedAnswers({});
+              setCurrentIndex(0);
+              setShowAdvice(false);
+            }}
+            className="mt-6 text-sm md:text-base text-blue-600 hover:text-blue-800 font-medium"
+          >
+            {t("take_another_test")}
+          </button>
+        </div>
       )}
+    </motion.div>
+  </motion.div>
+)}  
     </div>
   );
 }

@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { FiEye, FiEyeOff } from "react-icons/fi";
-import { loginUser } from "../store/authSlice";
 import { AppDispatch, RootState } from "../store/store";
 import { motion } from "framer-motion";
+import { registerUser } from "../store/authSlice";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginForm() {
+export default function UserForm() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [phone_number, setPhone_number] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const { loading } = useSelector((state: RootState) => state.auth);
+  const { loading, isLoggedIn, error } = useSelector(
+    (state: RootState) => state.auth
+  );
 
+  const [fullname, setFullname] = useState("");
+  const [age, setAge] = useState("");
+  const [phone_number, setPhone_number] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  // 🔹 Agar foydalanuvchi ro‘yxatdan o‘tsa → /test sahifasiga yuborish
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/test");
+    }
+  }, [isLoggedIn, navigate]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -30,100 +38,198 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
-    const result = await dispatch(loginUser({ phone_number, password }));
-    if (loginUser.fulfilled.match(result)) navigate("/test");
-    else setLocalError((result.payload as any)?.message || "Login failed. Please check your credentials.");
+
+    if (!fullname || !age || !phone_number) {
+      setLocalError("Iltimos, barcha maydonlarni to'ldiring");
+      return;
+    }
+
+    const result = await dispatch(registerUser({ fullname, age, phone_number }));
+
+    if (registerUser.fulfilled.match(result)) {
+      // endi navigate ishlaydi, alert shart emas
+      setFullname("");
+      setAge("");
+      setPhone_number("+998 ");
+    } else {
+      setLocalError((result.payload as any)?.message || "Xatolik yuz berdi");
+    }
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-100 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-        className="bg-white backdrop-blur-lg bg-opacity-70 shadow-2xl rounded-3xl p-10 w-full max-w-md relative overflow-hidden"
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
       >
-        <motion.h1
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-3xl font-extrabold text-purple-700 text-center mb-8 tracking-wide"
-        >
-          Login
-        </motion.h1>
-        {localError && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-red-600 font-semibold mb-4 text-center"
-          >
-            {localError}
-          </motion.div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <motion.input
-            type="tel"
-            value={phone_number}
-            onFocus={() => { if (!phone_number.startsWith("+998")) setPhone_number("+998 "); }}
-            onChange={handlePhoneChange}
-            placeholder="Phone number"
-            maxLength={17}
-            className="border border-gray-300 rounded-xl p-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-gray-400 text-gray-700 font-medium transition-all duration-300"
-            whileFocus={{ scale: 1.02 }}
-            required
-          />
-          <div className="relative">
-            <motion.input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="border border-gray-300 rounded-xl p-4 w-full pr-12 focus:outline-none focus:ring-2 focus:ring-purple-400 placeholder-gray-400 text-gray-700 font-medium transition-all duration-300"
-              whileFocus={{ scale: 1.02 }}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-purple-500 transition-colors duration-300"
-            >
-              {showPassword ? <FiEyeOff size={22} /> : <FiEye size={22} />}
-            </button>
-          </div>
-          <motion.button
-            type="submit"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            disabled={loading}
-            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold px-6 py-3 w-full rounded-xl shadow-lg transition-all duration-300 hover:shadow-2xl tracking-wide text-lg"
-          >
-            {loading ? <span className="animate-pulse">Logging in...</span> : "Login"}
-          </motion.button>
-        </form>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="mt-8 text-center text-gray-700 font-medium"
-        >
-          Do not have an account?{" "}
-          <Link to="/register" className="text-purple-500 hover:text-purple-700 font-semibold transition-colors duration-300">
-            Sign up
-          </Link>
-        </motion.p>
-      </motion.div>
+        {/* Form Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-center">
+          <h1 className="text-2xl font-bold text-white">Ro'yxatdan o'tish</h1>
+          <p className="text-blue-100 mt-1">
+            Iltimos, quyidagi maydonlarni to'ldiring
+          </p>
+        </div>
 
-      <motion.div
-        className="absolute -top-32 -left-32 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"
-        animate={{ scale: [1, 1.2, 1], rotate: [0, 45, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute -bottom-32 -right-32 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"
-        animate={{ scale: [1, 1.2, 1], rotate: [0, -45, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
+        {/* Form Content */}
+        <div className="p-6 sm:p-8">
+          {(localError || error) && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg flex items-center"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {localError || error}
+            </motion.div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label
+                htmlFor="fullname"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Ismingiz
+              </label>
+              <motion.input
+                id="fullname"
+                type="text"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                placeholder="To'liq ismingiz"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
+                required
+                whileFocus={{ scale: 1.01 }}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="age"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Yoshingiz
+              </label>
+              <motion.select
+                id="age"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjdjJ2MnYyIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBvbHlsaW5lIHBvaW50cz0iNiA5IDEyIDE1IDE4IDkiPjwvcG9seWxpbmU+PC9zdmc+')] bg-no-repeat bg-[right_1rem_center] bg-[length:1.5em]"
+                required
+                whileFocus={{ scale: 1.01 }}
+              >
+                <option value="">Yoshingizni tanlang</option>
+                <option value="18-21">18 - 21 yosh</option>
+                <option value="21-25">21 - 25 yosh</option>
+                <option value="25-30">25 - 30 yosh</option>
+                <option value="30+">30+ yosh</option>
+              </motion.select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Telefon raqam
+              </label>
+              <motion.input
+                id="phone"
+                type="tel"
+                value={phone_number}
+                onFocus={() => {
+                  if (!phone_number.startsWith("+998"))
+                    setPhone_number("+998 ");
+                }}
+                onChange={handlePhoneChange}
+                placeholder="+998 __ ___ __ __"
+                maxLength={17}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
+                required
+                whileFocus={{ scale: 1.01 }}
+              />
+            </div>
+
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center"
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Yuborilmoqda...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 12h14M12 5l7 7-7 7"
+                    />
+                  </svg>
+                  Yuborish
+                </>
+              )}
+            </motion.button>
+          </form>
+        </div>
+
+        {/* Form Footer */}
+        <div className="bg-gray-50 px-6 py-4 text-center border-t border-gray-200">
+          <p className="text-sm text-gray-600">
+            Formani to'ldirish orqali siz{" "}
+            <a href="#" className="text-blue-600 hover:underline">
+              foydalanish shartlari
+            </a>
+            ga rozilik bildirasiz
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 }

@@ -3,7 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
 import { fetchOptions, submitSelection } from "../store/testSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaTelegramPlane, FaInstagram } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaTelegramPlane,
+  FaInstagram,
+  FaArrowLeft,
+  FaArrowRight,
+  FaCheck,
+} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 export default function TestPage() {
@@ -34,6 +41,7 @@ export default function TestPage() {
   const TELEGRAM_LINK = "https://t.me/ravshanpulatjon";
   const INSTAGRAM_LINK =
     "https://www.instagram.com/ravshan_pulatjon?igsh=ano5ZWRzc2Z6eDV4";
+
   type Option = {
     id: number;
     types: string;
@@ -45,9 +53,13 @@ export default function TestPage() {
       : (options as Option[]);
 
   const LANG_OPTIONS = [
-    { id: "uz", label: t("uzbek") },
-    { id: "ru", label: t("russian") },
+    { id: "uz", label: t("uzbek"), flag: "🇺🇿" },
+    { id: "ru", label: t("russian"), flag: "🇷🇺" },
   ];
+
+  // Progress calculation
+  const progress =
+    questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
   useEffect(() => {
     i18n.changeLanguage(selectedLang);
@@ -115,256 +127,486 @@ export default function TestPage() {
     }
   };
 
-  useEffect(() => {
-    if (selectedLang) {
-      dispatch(fetchOptions(selectedLang));
-      setSelectedBusinessId(null);
-    }
-  }, [selectedLang, dispatch]);
-
   return (
-    <div className="min-h-screen relative bg-gradient-to-r from-purple-200 via-pink-100 to-red-200 p-4 md:p-6 flex items-center justify-center">
-      {/* Til va biznes tanlash modal */}
+    <div className="min-h-screen relative bg-gradient-to-br from-indigo-50 to-blue-50 p-4 md:p-6 flex items-center justify-center">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-blue-100 opacity-20"
+            style={{
+              width: Math.random() * 200 + 50 + "px",
+              height: Math.random() * 200 + 50 + "px",
+              left: Math.random() * 100 + "%",
+              top: Math.random() * 100 + "%",
+            }}
+            animate={{
+              x: [0, Math.random() * 100 - 50],
+              y: [0, Math.random() * 100 - 50],
+            }}
+            transition={{
+              duration: Math.random() * 30 + 20,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Language and business selection modal */}
       <AnimatePresence>
         {showSelectModal && optionsArray?.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-blue/100 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           >
             <motion.div
-              initial={{ scale: 0.8, y: -50, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.8, y: -50, opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="bg-gradient-to-br from-white to-purple-50 rounded-2xl md:rounded-3xl p-6 md:p-8 w-[95%] sm:w-[90%] md:w-full max-w-md shadow-2xl flex flex-col items-center"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl border border-gray-100"
             >
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-4 md:mb-6 text-purple-700 text-center">
-                {t("select_language")}
-              </h2>
-              <div className="flex gap-4 mb-6">
-                {LANG_OPTIONS.map((lang) => (
-                  <button
-                    key={lang.id}
-                    onClick={() => setSelectedLang(lang.id)}
-                    className={`px-4 py-2 rounded-xl border-2 ${
-                      selectedLang === lang.id
-                        ? "bg-purple-200 border-purple-500"
-                        : "bg-white border-gray-300"
-                    }`}
-                  >
-                    {lang.label}
-                  </button>
-                ))}
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                  {t("welcome_to_test")}
+                </h2>
+                <p className="text-gray-600">
+                  {t("select_preferences_to_continue")}
+                </p>
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-4 md:mb-6 text-purple-700 text-center">
-                {t("select_business")}
-              </h2>
-              <div className="w-full relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="w-full flex justify-between items-center bg-purple-500 text-white px-4 md:px-5 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md hover:shadow-lg hover:bg-purple-600 transition-all text-base md:text-lg"
-                >
-                  {selectedBusinessId !== null
-                    ? optionsArray.find((opt) => opt.id === selectedBusinessId)
-                        ?.types
-                    : t("choose_business")}
-                  <FaChevronDown
-                    className={`transition-transform ${
-                      dropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                    {t("select_language")}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {LANG_OPTIONS.map((lang) => (
+                      <motion.button
+                        key={lang.id}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setSelectedLang(lang.id)}
+                        className={`flex items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                          selectedLang === lang.id
+                            ? "bg-blue-50 border-blue-500 text-blue-600"
+                            : "bg-white border-gray-200 hover:border-blue-300"
+                        }`}
+                      >
+                        {/* <span className="text-2xl mr-2">{lang.flag}</span> */}
+                        <span>{lang.label}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
 
-                <AnimatePresence>
-                  {dropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.3 }}
-                      className="absolute top-full left-0 mt-2 w-full bg-white rounded-xl md:rounded-2xl shadow-xl z-50 overflow-auto max-h-[250px] md:max-h-[350px] border border-purple-100"
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                    {t("select_business")}
+                  </h3>
+                  <div className="relative">
+                    <motion.button
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                      className="w-full flex justify-between items-center bg-blue-600 text-white px-5 py-3 rounded-xl shadow-md hover:bg-blue-700 transition-all"
                     >
-                      {optionsArray.map((opt) => (
-                        <motion.button
-                          key={opt.id}
-                          onClick={() => {
-                            setSelectedBusinessId(opt.id);
-                            setDropdownOpen(false);
-                          }}
-                          whileHover={{
-                            scale: 1.02,
-                            backgroundColor: "#F3E8FF",
-                          }}
-                          className={`w-full text-left px-4 md:px-5 py-2.5 md:py-3 rounded-lg md:rounded-xl transition text-sm md:text-base ${
-                            selectedBusinessId === opt.id
-                              ? "bg-purple-200 font-semibold"
-                              : "hover:bg-purple-50"
-                          }`}
-                        >
-                          {opt.types}
-                        </motion.button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                      <span>
+                        {selectedBusinessId !== null
+                          ? optionsArray.find(
+                              (opt) => opt.id === selectedBusinessId
+                            )?.types
+                          : t("choose_business")}
+                      </span>
+                      <FaChevronDown
+                        className={`transition-transform ${
+                          dropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </motion.button>
 
-              <motion.button
-                disabled={selectedBusinessId === null || !selectedLang}
-                whileHover={{
-                  scale: selectedBusinessId !== null && selectedLang ? 1.05 : 1,
-                }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setShowSelectModal(false);
-                  if (selectedBusinessId !== null && selectedLang) {
-                    dispatch(
-                      submitSelection({
-                        businessId: selectedBusinessId,
-                        lang: selectedLang,
-                      })
-                    )
-                      .unwrap()
-                      .then((res) =>
-                        setQuestions(Array.isArray(res) ? res : [])
+                    <AnimatePresence>
+                      {dropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute top-full left-0 mt-2 w-full bg-white rounded-xl shadow-xl z-50 overflow-auto max-h-60 border border-gray-200"
+                        >
+                          {optionsArray.map((opt) => (
+                            <motion.button
+                              key={opt.id}
+                              onClick={() => {
+                                setSelectedBusinessId(opt.id);
+                                setDropdownOpen(false);
+                              }}
+                              whileHover={{ backgroundColor: "#EFF6FF" }}
+                              className={`w-full text-left px-5 py-3 transition ${
+                                selectedBusinessId === opt.id
+                                  ? "bg-blue-50 text-blue-600 font-medium"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {opt.types}
+                            </motion.button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                <motion.button
+                  disabled={selectedBusinessId === null || !selectedLang}
+                  whileHover={{
+                    scale:
+                      selectedBusinessId !== null && selectedLang ? 1.03 : 1,
+                  }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    setShowSelectModal(false);
+                    if (selectedBusinessId !== null && selectedLang) {
+                      dispatch(
+                        submitSelection({
+                          businessId: selectedBusinessId,
+                          lang: selectedLang,
+                        })
                       )
-                      .finally(() => setCurrentIndex(0));
-                  }
-                }}
-                className={`mt-5 md:mt-6 w-full px-5 md:px-6 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md text-white font-semibold text-base md:text-lg transition ${
-                  selectedBusinessId !== null && selectedLang
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-gray-300 cursor-not-allowed"
-                }`}
-              >
-                {t("start")}
-              </motion.button>
+                        .unwrap()
+                        .then((res) =>
+                          setQuestions(Array.isArray(res) ? res : [])
+                        )
+                        .finally(() => setCurrentIndex(0));
+                    }
+                  }}
+                  className={`w-full py-3 rounded-xl shadow-md text-white font-semibold transition ${
+                    selectedBusinessId !== null && selectedLang
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                      : "bg-gray-300 cursor-not-allowed"
+                  }`}
+                >
+                  {t("start_test")}
+                </motion.button>
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Test savollari */}
+      {/* Test questions */}
       {!showSelectModal && questions.length > 0 && !showResult && (
         <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="bg-gradient-to-br from-white to-purple-50 rounded-2xl md:rounded-3xl p-6 md:p-10 w-[95%] sm:w-[90%] md:w-full max-w-3xl shadow-2xl relative overflow-hidden"
+          key={`question-${currentIndex}`}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          className="bg-white rounded-3xl p-6 md:p-8 w-full max-w-2xl shadow-2xl relative overflow-hidden border border-gray-100"
         >
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-extrabold text-gray-800 mb-4 md:mb-6 text-center">
+          {/* Progress bar */}
+          <div className="w-full bg-gray-100 rounded-full h-2.5 mb-6">
+            <motion.div
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2.5 rounded-full"
+              initial={{ width: `${progress}%` }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+
+          {/* Question counter */}
+          <div className="text-sm text-gray-500 mb-2">
+            {t("question")} {currentIndex + 1} {t("of")} {questions.length}
+          </div>
+
+          {/* Question */}
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">
             {questions[currentIndex].question}
           </h2>
-          <div className="flex flex-col gap-3 md:gap-4">
+
+          {/* Answer options */}
+          <div className="space-y-3 mb-8">
             {["option1", "option2", "option3"].map((key) => (
               <motion.button
                 key={key}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handleAnswerSelect(questions[currentIndex][key])}
-                className={`border-2 p-3 md:p-4 rounded-xl md:rounded-2xl text-left font-medium text-base md:text-lg transition-colors duration-300 shadow-md ${
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center ${
                   selectedAnswers[currentIndex] === questions[currentIndex][key]
-                    ? "bg-purple-500 text-white border-purple-600 shadow-lg"
-                    : "bg-white hover:bg-purple-100 border-gray-300"
+                    ? "bg-blue-50 border-blue-500 text-blue-600"
+                    : "bg-white border-gray-200 hover:border-blue-300"
                 }`}
               >
-                {questions[currentIndex][key]}
+                {selectedAnswers[currentIndex] ===
+                questions[currentIndex][key] ? (
+                  <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                    <FaCheck className="text-white text-xs" />
+                  </div>
+                ) : (
+                  <div className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3" />
+                )}
+                <span>{questions[currentIndex][key]}</span>
               </motion.button>
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between gap-3 md:gap-4 mt-6 md:mt-8">
+          {/* Navigation buttons */}
+          <div className="flex justify-between">
             <motion.button
               onClick={handlePrev}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               disabled={currentIndex === 0}
-              className="flex-1 px-5 md:px-6 py-2.5 md:py-3 bg-gray-200 text-gray-700 rounded-xl md:rounded-2xl shadow-md hover:bg-gray-300 disabled:opacity-50 text-sm md:text-base"
+              className={`px-5 py-2 rounded-lg flex items-center space-x-2 ${
+                currentIndex === 0
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:bg-blue-50"
+              }`}
             >
-              {t("previous")}
+              <FaArrowLeft />
+              <span>{t("previous")}</span>
             </motion.button>
+
             <motion.button
               onClick={handleNext}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               disabled={!selectedAnswers[currentIndex]}
-              className="flex-1 px-5 md:px-6 py-2.5 md:py-3 bg-purple-500 text-white rounded-xl md:rounded-2xl shadow-md hover:bg-purple-600 disabled:opacity-50 text-sm md:text-base"
+              className={`px-5 py-2 rounded-lg flex items-center space-x-2 ${
+                !selectedAnswers[currentIndex]
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+              }`}
             >
-              {currentIndex === questions.length - 1 ? t("finish") : t("next")}
+              <span>
+                {currentIndex === questions.length - 1
+                  ? t("finish")
+                  : t("next")}
+              </span>
+              <FaArrowRight />
             </motion.button>
           </div>
         </motion.div>
       )}
 
-      {/* Natija */}
+      {/* Results section */}
       {showResult && (
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="min-h-screen flex flex-col items-center justify-center p-4 md:p-6"
+          className="w-full max-w-2xl"
         >
-          <motion.div className="bg-white rounded-2xl md:rounded-3xl p-6 md:p-10 w-[95%] sm:w-[90%] md:w-full max-w-[600px] shadow-2xl flex flex-col items-center text-center">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 md:mb-6 text-purple-700">
-              {t("test_completed")}
-            </h1>
-
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white relative rounded-3xl min-h-[400px] p-6 md:p-8 shadow-2xl text-center border border-gray-100"
+          >
             {!showAdvice ? (
               <>
-                <p className="mb-4 md:mb-6 text-gray-700 font-medium text-sm md:text-base">
-                  {t("advice_prompt")}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6 w-full sm:w-auto">
-                  <a
-                    href={TELEGRAM_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setTelegramClicked(true)}
-                    className="flex-1"
+                <div className="mb-6">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring" }}
+                    className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
                   >
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-full bg-blue-500 text-white px-4 md:px-5 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md hover:shadow-lg flex items-center justify-center space-x-2 text-sm md:text-base"
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-10 w-10 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      <FaTelegramPlane /> <span>{t("telegram")}</span>
-                    </motion.button>
-                  </a>
-                  <a
-                    href={INSTAGRAM_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setInstagramClicked(true)}
-                    className="flex-1"
-                  >
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-full bg-pink-500 text-white px-4 md:px-5 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md hover:shadow-lg flex items-center justify-center space-x-2 text-sm md:text-base"
-                    >
-                      <FaInstagram /> <span>{t("instagram")}</span>
-                    </motion.button>
-                  </a>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </motion.div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                    {t("test_completed")}
+                  </h1>
+                  <p className="text-gray-600">{t("thanks_for_completing")}</p>
                 </div>
-                {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}
+
+                <div className="mb-6">
+                  <p className="text-gray-700 mb-4">
+                    {t("subscribe_for_advice")}
+                  </p>
+                  <div className="flex flex-col h-[50px] sm:flex-row gap-4 justify-center relative">
+                    <a
+                      href={TELEGRAM_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setTelegramClicked(true)}
+                      className="absolute left-[25%]"
+                    >
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setTelegramClicked(true);
+                          window.open(TELEGRAM_LINK, "_blank");
+                        }}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                          telegramClicked
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                        }`}
+                      >
+                        <FaTelegramPlane />
+                        <span>{t("telegram")}</span>
+                        {telegramClicked && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </motion.button>
+                    </a>
+                    <a
+                      href={INSTAGRAM_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer absolute right-[25%]"
+                      onClick={() => {
+                        setInstagramClicked(true);
+                        window.open(INSTAGRAM_LINK, "_blank");
+                      }}
+                    >
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setInstagramClicked(true);
+                          window.open(INSTAGRAM_LINK, "_blank");
+                        }}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+                          instagramClicked
+                            ? "bg-green-100 text-green-800"
+                            : "bg-pink-100 text-pink-800 hover:bg-pink-200"
+                        }`}
+                      >
+                        <FaInstagram />
+                        <span>{t("instagram")}</span>
+                        {instagramClicked && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </motion.button>
+                    </a>
+                  </div>
+                </div>
+
+                {errorMsg && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-500 mb-4"
+                  >
+                    {errorMsg}
+                  </motion.p>
+                )}
+
                 <motion.button
                   onClick={handleAdviceClick}
-                  disabled={loadingAdvice}
-                  whileHover={{ scale: loadingAdvice ? 1 : 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-green-500 text-white px-6 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl shadow-md hover:bg-green-600 disabled:opacity-50 text-sm md:text-base"
+                  disabled={
+                    loadingAdvice || !telegramClicked || !instagramClicked
+                  }
+                  whileHover={{ scale: loadingAdvice ? 1 : 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`w-[90%] curosr-pointer absolute py-3 rounded-lg bottom-[20px] left-[50%] translate-x-[-50%] font-medium ${
+                    loadingAdvice
+                      ? "bg-gray-200 text-gray-500"
+                      : !telegramClicked || !instagramClicked
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+                  }`}
                 >
-                  {loadingAdvice ? t("getting_advice") : t("get_advice")}
+                  {loadingAdvice ? (
+                    <span className="flex items-center justify-center space-x-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      <span>{t("getting_advice")}</span>
+                    </span>
+                  ) : (
+                    t("get_personalized_advice")
+                  )}
                 </motion.button>
               </>
             ) : (
-              <div className="w-full max-h-[60vh] overflow-y-auto mt-4 p-4 bg-green-50 rounded-xl md:rounded-2xl shadow-inner text-sm md:text-base text-gray-800">
-                {advice}
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                    {t("your_personalized_advice")}
+                  </h2>
+                  <p className="text-gray-600">{t("based_on_your_answers")}</p>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-4 md:p-6 text-left text-gray-700 whitespace-pre-line">
+                  {advice}
+                </div>
+                <button
+                  onClick={() => {
+                    setShowResult(false);
+                    setShowSelectModal(true);
+                    setSelectedBusinessId(null);
+                    setSelectedAnswers({});
+                    setCurrentIndex(0);
+                    setShowAdvice(false);
+                  }}
+                  className="mt-6 text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {t("take_another_test")}
+                </button>
               </div>
             )}
           </motion.div>

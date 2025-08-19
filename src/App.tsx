@@ -20,7 +20,7 @@ function App() {
       )}
       <Routes>
         <Route path="/auth" element={<LoginForm />} />
-        <Route path="/register" element={<Register />} />
+        {/* <Route path="/register" element={<Register />} /> */}
         <Route path="/test" element={<TestPage />} />
         <Route path="/" element={<HomePage />} />
       </Routes>

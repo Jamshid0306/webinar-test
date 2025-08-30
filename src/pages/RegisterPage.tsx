@@ -28,26 +28,30 @@ export default function RegisterForm() {
     setPhone_number(formatted);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(
-      registerUser({ username, phone_number, password })
-    );
-    console.log(result);
 
-    if (registerUser.fulfilled.match(result) && result.payload?.token) {
+    // Foydalanuvchi barcha inputlarni to'ldirganini tekshirish
+    if (!username || !phone_number || !password) {
       dispatch(
         setNotification({
-          message: "User created successfully!",
-          type: "success",
+          message: "Iltimos, barcha maydonlarni to‘ldiring!",
+          type: "error",
         })
       );
-      navigate("/auth");
-    } else {
-      dispatch(
-        setNotification({ message: "Registration failed!", type: "error" })
-      );
+      return;
     }
+
+    // Agar barcha maydonlar to'ldirilgan bo'lsa, alert yoki notification ko'rsatish
+    dispatch(
+      setNotification({
+        message: "Ro‘yxatdan o‘tish muvaffaqiyatli!",
+        type: "success",
+      })
+    );
+
+    // Backendga so‘rov yuborilmaydi
+    // navigate("/auth"); // agar istasangiz keyingi sahifaga o‘tish mumkin
   };
 
   return (

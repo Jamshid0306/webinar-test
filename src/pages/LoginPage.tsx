@@ -48,7 +48,7 @@ export default function UserForm() {
     setLocalError(null);
     // alert("Ro‘yxatdan o‘tish muvaffaqiyatli!");
     navigate("/test");
-    localStorage.setItem("access", "sdfjle9welnfkw");
+    // localStorage.setItem("access", "sdfjle9welnfkw");
   };
 
   return (

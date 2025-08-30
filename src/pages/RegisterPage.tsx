@@ -56,9 +56,6 @@ export default function RegisterForm() {
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-100 relative overflow-hidden">
-      {notification.message && (
-        <Notification message={notification.message} type={notification.type} />
-      )}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

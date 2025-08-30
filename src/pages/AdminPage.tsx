@@ -20,7 +20,10 @@ export default function AdminPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [showTestModal, setShowTestModal] = useState(false);
   const [showBusinessModal, setShowBusinessModal] = useState(false);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [question, setQuestion] = useState("");
   const [optionA, setOptionA] = useState("");
   const [optionB, setOptionB] = useState("");
@@ -75,6 +78,20 @@ export default function AdminPage() {
       setBusinessId(null);
     });
   };
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchTests();
+      fetchBusinesses();
+    }
+  }, [isLoggedIn]);
+  const handleLogin = () => {
+    if (username === "1" && password === "1") {
+      setIsLoggedIn(true);
+      setError("");
+    } else {
+      setError("Username yoki password noto‘g‘ri!");
+    }
+  };
 
   const handleDeleteTest = (id: number) => {
     if (window.confirm("Siz rostdan ham ushbu testni o‘chirmoqchimisiz?")) {
@@ -108,6 +125,38 @@ export default function AdminPage() {
     }
   };
 
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-indigo-500 to-purple-600">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl w-[400px]">
+          <h1 className="text-2xl font-bold text-indigo-600 mb-6 text-center">
+            🔑 Admin Login
+          </h1>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="border w-full p-3 rounded-lg mb-3 focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border w-full p-3 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <button
+            onClick={handleLogin}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg w-full hover:bg-indigo-700 transition"
+          >
+            ✅ Login
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 p-8">
       <div className="max-w-6xl mx-auto">

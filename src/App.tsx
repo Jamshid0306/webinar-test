@@ -9,6 +9,7 @@ import { RootState } from "./store/store";
 import TestPage from "./pages/TestPage";
 import "./i18n/index";
 import HomePage from "./pages/HomePage";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   const notification = useSelector((state: RootState) => state.notification);
@@ -23,6 +24,7 @@ function App() {
         {/* <Route path="/register" element={<Register />} /> */}
         <Route path="/test" element={<TestPage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </>
   );

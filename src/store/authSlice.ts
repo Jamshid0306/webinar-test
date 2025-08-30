@@ -51,7 +51,7 @@ export const registerUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/register`, data);
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, data);
       // Agar token bo‘lsa localStorage saqlash (ixtiyoriy)
       if (response.data.access_token) {
         localStorage.setItem("access", response.data.access_token);

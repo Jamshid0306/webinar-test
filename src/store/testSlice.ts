@@ -1,17 +1,18 @@
+// testSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-interface Question {
+type Question = {
   id: number;
   question: string;
-  option1?: string;
-  option2?: string;
-  option3?: string;
-  option4?: string;
-}
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  bussiness?: { id: number; types: string };
+};
 
 interface TestState {
-  options: { types: string; id: number; name: string }[];
+  options: { types: string; id: number }[];
   selected: number | null;
   questions: Question[];
   answers: { [key: number]: string };
@@ -32,16 +33,14 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchOptions = createAsyncThunk(
   "test/fetchOptions",
-  async (lang: string, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("access");
-      const res = await axios.get(`${API_BASE_URL}/bussiness-options`, {
+      const res = await axios.get(`${API_BASE_URL}/businesses`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "ngrok-skip-browser-warning": "true",
         },
-        params: { lang }, // <--- query param sifatida yuborish
       });
+
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "Server error");
@@ -51,22 +50,13 @@ export const fetchOptions = createAsyncThunk(
 
 export const submitSelection = createAsyncThunk(
   "test/submitSelection",
-  async (
-    payload: { businessId: number; lang: string },
-    { rejectWithValue }
-  ) => {
+  async (payload: { businessId: number }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("access");
       const res = await axios.get(
-        `${API_BASE_URL}/test/${payload.businessId}`,
+        `${API_BASE_URL}/tests/?business_id=${payload.businessId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
             "ngrok-skip-browser-warning": "true",
-          },
-          params: {
-            lang: payload.lang, // query param sifatida yuboriladi
           },
         }
       );
@@ -101,7 +91,6 @@ const testSlice = createSlice({
     builder
       .addCase(fetchOptions.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchOptions.fulfilled, (state, action) => {
         state.loading = false;
@@ -113,7 +102,6 @@ const testSlice = createSlice({
       })
       .addCase(submitSelection.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(submitSelection.fulfilled, (state, action) => {
         state.loading = false;

@@ -17,7 +17,6 @@ export default function UserForm() {
   const [phone_number, setPhone_number] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
 
-  // 🔹 Agar foydalanuvchi ro‘yxatdan o‘tsa → /test sahifasiga yuborish
   useEffect(() => {
     if (isLoggedIn) {
       navigate("/test");
@@ -220,7 +219,7 @@ export default function UserForm() {
         </div>
 
         {/* Form Footer */}
-        <div className="bg-gray-50 px-6 py-4 text-center border-t border-gray-200">
+        {/* <div className="bg-gray-50 px-6 py-4 text-center border-t border-gray-200">
           <p className="text-sm text-gray-600">
             Formani to'ldirish orqali siz{" "}
             <a href="#" className="text-blue-600 hover:underline">
@@ -228,7 +227,7 @@ export default function UserForm() {
             </a>
             ga rozilik bildirasiz
           </p>
-        </div>
+        </div> */}
       </motion.div>
     </div>
   );

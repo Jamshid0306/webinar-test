@@ -34,7 +34,7 @@ export default function UserForm() {
     setPhone_number(formatted);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
 
@@ -43,16 +43,12 @@ export default function UserForm() {
       return;
     }
 
-    const result = await dispatch(registerUser({ fullname, age, phone_number }));
-
-    if (registerUser.fulfilled.match(result)) {
-      // endi navigate ishlaydi, alert shart emas
-      setFullname("");
-      setAge("");
-      setPhone_number("+998 ");
-    } else {
-      setLocalError((result.payload as any)?.message || "Xatolik yuz berdi");
-    }
+    // Backendga so‘rov yuborilmaydi
+    // Foydalanuvchi muvaffaqiyatli ro'yxatdan o'tgan deb hisoblanadi
+    setLocalError(null);
+    // alert("Ro‘yxatdan o‘tish muvaffaqiyatli!");
+    navigate("/test");
+    // localStorage.setItem("access", "sdfjle9welnfkw");
   };
 
   return (

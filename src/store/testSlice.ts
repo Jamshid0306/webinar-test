@@ -8,8 +8,14 @@ type Question = {
   option_a: string;
   option_b: string;
   option_c: string;
+  option_d: string;
+  option_a_score: number;
+  option_b_score: number;
+  option_c_score: number;
+  option_d_score: number;
   bussiness?: { id: number; types: string };
 };
+
 
 interface TestState {
   options: { types: string; id: number }[];

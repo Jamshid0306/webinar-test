@@ -11,8 +11,13 @@ interface Test {
   id: number;
   question: string;
   option_a: string;
+  option_a_score: number;
   option_b: string;
+  option_b_score: number;
   option_c: string;
+  option_c_score: number;
+  option_d: string;
+  option_d_score: number;
   bussiness: Business;
 }
 
@@ -27,8 +32,13 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [question, setQuestion] = useState("");
   const [optionA, setOptionA] = useState("");
+  const [optionAScore, setOptionAScore] = useState<number | "">("");
   const [optionB, setOptionB] = useState("");
+  const [optionBScore, setOptionBScore] = useState<number | "">("");
   const [optionC, setOptionC] = useState("");
+  const [optionCScore, setOptionCScore] = useState<number | "">("");
+  const [optionD, setOptionD] = useState("");
+  const [optionDScore, setOptionDScore] = useState<number | "">("");
   const [businessId, setBusinessId] = useState<number | null>(null);
   const [newBusiness, setNewBusiness] = useState("");
 
@@ -54,11 +64,22 @@ export default function AdminPage() {
 
   const handleAddTest = () => {
     if (!businessId) return alert("Biznesni tanlang!");
-    const newTest = { question, option_a: optionA, option_b: optionB, option_c: optionC, bussiness_id: businessId };
+    const newTest = {
+      question,
+      option_a: optionA,
+      option_a_score: Number(optionAScore),
+      option_b: optionB,
+      option_b_score: Number(optionBScore),
+      option_c: optionC,
+      option_c_score: Number(optionCScore),
+      option_d: optionD,
+      option_d_score: Number(optionDScore),
+      bussiness_id: businessId,
+    };
     axios.post(`${url}/tests/`, newTest).then((res) => {
       setTests([...tests, res.data]);
       setShowTestModal(false);
-      setQuestion(""); setOptionA(""); setOptionB(""); setOptionC(""); setBusinessId(null);
+      setQuestion(""); setOptionA(""); setOptionAScore(""); setOptionB(""); setOptionBScore(""); setOptionC(""); setOptionCScore(""); setOptionD(""); setOptionDScore(""); setBusinessId(null);
     });
   };
 
@@ -116,9 +137,10 @@ export default function AdminPage() {
                 <motion.div key={test.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.3 }} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-6 border border-gray-200">
                   <h3 className="text-xl font-bold text-gray-800 mb-3">{test.question}</h3>
                   <ul className="space-y-2 text-gray-600">
-                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">{test.option_a}</li>
-                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">{test.option_b}</li>
-                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">{test.option_c}</li>
+                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">A: {test.option_a} <span className="text-sm text-gray-500">({test.option_a_score} bal)</span></li>
+                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">B: {test.option_b} <span className="text-sm text-gray-500">({test.option_b_score} bal)</span></li>
+                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">C: {test.option_c} <span className="text-sm text-gray-500">({test.option_c_score} bal)</span></li>
+                    <li className="px-3 py-2 bg-indigo-50 rounded-lg">D: {test.option_d} <span className="text-sm text-gray-500">({test.option_d_score} bal)</span></li>
                   </ul>
                   <p className="text-sm text-gray-500 mt-3">🏢 Biznes: <span className="font-medium">{test.bussiness.types}</span></p>
                   <button onClick={() => handleDeleteTest(test.id)} className="mt-3 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition w-full">🗑 O‘chirish</button>
@@ -153,9 +175,22 @@ export default function AdminPage() {
               <h2 className="text-xl font-bold text-indigo-600 mb-4 text-center">➕ Yangi Test Qo‘shish</h2>
               <div className="space-y-3">
                 <input type="text" placeholder="Savol" value={question} onChange={(e) => setQuestion(e.target.value)} className="border w-full p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
-                <input type="text" placeholder="Option A" value={optionA} onChange={(e) => setOptionA(e.target.value)} className="border w-full p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
-                <input type="text" placeholder="Option B" value={optionB} onChange={(e) => setOptionB(e.target.value)} className="border w-full p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
-                <input type="text" placeholder="Option C" value={optionC} onChange={(e) => setOptionC(e.target.value)} className="border w-full p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" placeholder="Option A" value={optionA} onChange={(e) => setOptionA(e.target.value)} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                  <input type="number" placeholder="Score" value={optionAScore} onChange={(e) => setOptionAScore(Number(e.target.value))} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" placeholder="Option B" value={optionB} onChange={(e) => setOptionB(e.target.value)} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                  <input type="number" placeholder="Score" value={optionBScore} onChange={(e) => setOptionBScore(Number(e.target.value))} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" placeholder="Option C" value={optionC} onChange={(e) => setOptionC(e.target.value)} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                  <input type="number" placeholder="Score" value={optionCScore} onChange={(e) => setOptionCScore(Number(e.target.value))} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" placeholder="Option D" value={optionD} onChange={(e) => setOptionD(e.target.value)} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                  <input type="number" placeholder="Score" value={optionDScore} onChange={(e) => setOptionDScore(Number(e.target.value))} className="border p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"/>
+                </div>
                 <select value={businessId ?? ""} onChange={(e) => setBusinessId(Number(e.target.value))} className="border w-full p-3 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none">
                   <option value="">Biznesni tanlang</option>
                   {businesses.map((b) => <option key={b.id} value={b.id}>{b.types}</option>)}

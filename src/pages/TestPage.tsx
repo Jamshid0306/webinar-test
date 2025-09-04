@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../store/store";
 import { fetchOptions, submitSelection } from "../store/testSlice";
-import {
-  motion,
-  AnimatePresence,
-  Variants,
-  TargetAndTransition,
-} from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   FaTelegramPlane,
   FaInstagram,
@@ -31,6 +26,11 @@ interface Question {
   option_a: string;
   option_b: string;
   option_c: string;
+  option_d?: string;
+  option_a_score: number;
+  option_b_score: number;
+  option_c_score: number;
+  option_d_score?: number;
   bussiness: BusinessOption;
 }
 
@@ -49,10 +49,6 @@ interface QuestionScreenProps {
   onPrev: () => void;
 }
 
-interface ResultScreenProps {
-  onReset: () => void;
-}
-
 interface SocialButtonProps {
   icon: React.ComponentType<any>;
   label: string;
@@ -61,9 +57,6 @@ interface SocialButtonProps {
   color: "blue" | "pink" | "green";
 }
 
-// ===========================
-//        ANIMATIONS
-// ===========================
 const animations: Record<string, Variants> = {
   page: {
     hidden: { opacity: 0, y: 20 },
@@ -101,15 +94,11 @@ const animations: Record<string, Variants> = {
   },
 };
 
-// ===========================
-//      SUB-COMPONENTS
-// ===========================
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
   const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(
     null
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   return (
     <motion.div
       variants={{
@@ -138,7 +127,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
           </h2>
           <p className="text-slate-600">Бошлаш учун, бизнес турини танланг.</p>
         </div>
-
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -155,7 +143,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
               }`}
             />
           </button>
-
           <AnimatePresence>
             {dropdownOpen && (
               <motion.div
@@ -184,7 +171,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
             )}
           </AnimatePresence>
         </div>
-
         <motion.button
           disabled={selectedBusinessId === null}
           onClick={() =>
@@ -211,16 +197,15 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
   onPrev,
 }) => {
   const progress = ((currentIndex + 1) / total) * 100;
-
   return (
-    <div className="h-[100vh] border flex items-center bg-blue-200">
+    <div className=" flex items-center bg-blue-200">
       <motion.div
         key={currentIndex}
         variants={animations.page}
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="bg-gradient-to-br from-indigo-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 w-full max-w-2xl shadow-2xl mx-auto border border-white/30"
+        className="bg-white rounded-3xl p-6 md:p-8 w-full max-w-2xl shadow-2xl mx-auto"
       >
         <div className="w-full bg-slate-200 rounded-full h-2.5 mb-6">
           <motion.div
@@ -229,63 +214,61 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
             transition={{ duration: 0.6, ease: "easeInOut" as any }}
           />
         </div>
-
         <div className="text-sm font-medium text-slate-500 mb-4 flex justify-between">
           <span>
             Савол {currentIndex + 1} дан {total}
           </span>
         </div>
-
         <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-8">
           {question.question}
         </h2>
-
         <motion.div
           variants={animations.staggerContainer}
           initial="hidden"
           animate="visible"
           className="space-y-4 mb-8"
         >
-          {(["option_a", "option_b", "option_c"] as const).map((key) => {
-            const value = question[key];
-            if (!value) return null;
-            const isSelected = selectedAnswer === value; // bu to'g'ri ishlashi kerak
-            return (
-              <motion.div
-                key={`${currentIndex}-${key}`}
-                variants={animations.staggerItem}
-                onClick={() => onAnswer(value)}
-                whileHover={{ scale: 1.02, x: 4 }}
-                whileTap={{ scale: 0.98 }}
-                className={`cursor-pointer w-full text-left p-4 rounded-xl border-2 flex items-center transition-all duration-300 ${
-                  isSelected
-                    ? "bg-indigo-50 border-indigo-500 text-indigo-800 shadow-lg shadow-indigo-500/10"
-                    : "bg-white border-slate-200 hover:border-indigo-400 hover:shadow-md hover:shadow-indigo-500/5"
-                }`}
-              >
+          {(["option_a", "option_b", "option_c", "option_d"] as const).map(
+            (key) => {
+              const value = question[key];
+              if (!value) return null;
+              const isSelected = selectedAnswer === value;
+              return (
                 <motion.div
-                  className="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 flex-shrink-0"
-                  animate={{
-                    backgroundColor: isSelected ? "#6366F1" : "#FFFFFF",
-                    borderColor: isSelected ? "#6366F1" : "#E2E8F0",
-                  }}
+                  key={`${currentIndex}-${key}`}
+                  variants={animations.staggerItem}
+                  onClick={() => onAnswer(value)}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`cursor-pointer w-full text-left p-4 rounded-xl border-2 flex items-center transition-all duration-300 ${
+                    isSelected
+                      ? "bg-indigo-50 border-indigo-500 text-indigo-800 shadow-lg shadow-indigo-500/10"
+                      : "bg-white border-slate-200 hover:border-indigo-400 hover:shadow-md hover:shadow-indigo-500/5"
+                  }`}
                 >
-                  {isSelected && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.1 }}
-                    >
-                      <FaCheck className="text-white text-xs" />
-                    </motion.div>
-                  )}
+                  <motion.div
+                    className="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 flex-shrink-0"
+                    animate={{
+                      backgroundColor: isSelected ? "#6366F1" : "#FFFFFF",
+                      borderColor: isSelected ? "#6366F1" : "#E2E8F0",
+                    }}
+                  >
+                    {isSelected && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        <FaCheck className="text-white text-xs" />
+                      </motion.div>
+                    )}
+                  </motion.div>
+                  <span className="font-medium text-slate-800">{value}</span>
                 </motion.div>
-                <span className="font-medium text-slate-800">{value}</span>
-              </motion.div>
-            );
-          })}
+              );
+            }
+          )}
         </motion.div>
-
         <div className="flex justify-between items-center mt-10">
           <motion.button
             onClick={onPrev}
@@ -297,7 +280,6 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
             <FaArrowLeft />
             <span>Олдинги</span>
           </motion.button>
-
           <motion.button
             onClick={onNext}
             disabled={!selectedAnswer}
@@ -313,6 +295,58 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
     </div>
   );
 };
+const CircularProgress: React.FC<{ value: number; max: number }> = ({ value, max }) => {
+  const radius = 60;
+  const stroke = 10;
+  const normalizedRadius = radius - stroke * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const percentage = (value / max) * 100;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <svg height={radius * 2} width={radius * 2}>
+        <circle
+          stroke="#E5E7EB"
+          fill="transparent"
+          strokeWidth={stroke}
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+        />
+        <circle
+          stroke="url(#gradient)"
+          fill="transparent"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={`${circumference} ${circumference}`}
+          style={{ strokeDashoffset }}
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+          transform={`rotate(-90 ${radius} ${radius})`}
+        />
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#6366F1" />
+            <stop offset="100%" stopColor="#3B82F6" />
+          </linearGradient>
+        </defs>
+        <text
+          x="50%"
+          y="50%"
+          dy=".3em"
+          textAnchor="middle"
+          className="text-lg font-bold fill-slate-800"
+        >
+          {`${value}/${max}`}
+        </text>
+      </svg>
+      {/* <span className="mt-2 text-slate-600 font-medium">Жами балл</span> */}
+    </div>
+  );
+};
+
 
 const SocialButton: React.FC<SocialButtonProps> = ({
   icon: Icon,
@@ -344,11 +378,9 @@ const SocialButton: React.FC<SocialButtonProps> = ({
       hover: "hover:brightness-110",
     },
   };
-
   const current = clicked
     ? { bg: "bg-green-400", border: "border-green-600", text: "text-white" }
     : colors[color];
-
   return (
     <a
       href="#"
@@ -366,19 +398,76 @@ const SocialButton: React.FC<SocialButtonProps> = ({
   );
 };
 
-const ResultScreen: React.FC<ResultScreenProps> = ({ onReset }) => {
+interface ResultScreenProps {
+  onReset: () => void;
+  questions: Question[];
+  selectedAnswers: { [key: number]: string };
+}
+
+const ResultScreen: React.FC<ResultScreenProps> = ({
+  onReset,
+  questions,
+  selectedAnswers,
+}) => {
   const [showAdvice, setShowAdvice] = useState(false);
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState("");
   const [tgClicked, setTgClicked] = useState(false);
   const [igClicked, setIgClicked] = useState(false);
 
+  const calculateScore = () => {
+    let total = 0;
+    questions.forEach((q, idx) => {
+      const answer = selectedAnswers[idx];
+      if (answer === q.option_a) total += q.option_a_score;
+      if (answer === q.option_b) total += q.option_b_score;
+      if (answer === q.option_c) total += q.option_c_score;
+      if (answer === q.option_d) total += q.option_d_score || 0;
+    });
+    return total;
+  };
+
   const handleGetAdvice = () => {
     setLoading(true);
     setTimeout(() => {
-      setAdvice(
-        "Based on your answers, we recommend the following:\n\n• Re-evaluate your current marketing strategy to identify new growth channels.\n• Increase your engagement on social media platforms to build a stronger community.\n• Consider implementing a CRM system to improve customer relationship management. ✅"
-      );
+      const score = calculateScore();
+      let text = `Сизнинг жами баллингиз: ${score}\n\n`;
+
+      if (score >= 25 && score <= 45) {
+        text +=
+          "📊 Даража: Бошланғич даража.\n" +
+          "Сизга ҳали билим ва тажриба етишмайди.\n" +
+          "📝 Тавсия: бизнес асосларини ўрганинг ва кичик форматда бизнес бошланг.\n";
+      } else if (score >= 46 && score <= 65) {
+        text +=
+          "📊 Даража: Амалиётчи даражаси.\n" +
+          "Асосий тушунчаларга эгасиз, лекин хатолар бўлади.\n" +
+          "📝 Тавсия: ментор топинг ёки бизнес бошқариш бўйича курсдан ўтинг.\n";
+      } else if (score >= 66 && score <= 85) {
+        text +=
+          "📊 Даража: Тадбиркор даражаси.\n" +
+          "Асосий жараёнларни тушунасиз ва дўконни бошқара оласиз.\n" +
+          "📝 Тавсия: автоматлаштириш ва маркетингга эътибор беринг.\n";
+      } else if (score >= 86 && score <= 100) {
+        text +=
+          "📊 Даража: Профессионал даража.\n" +
+          "Сиз тармоқ дўконларини бошқаришга тайёрсиз.\n" +
+          "📝 Тавсия: брендни кучайтириш ва франшиза яратинг.\n";
+      } else {
+        text += "⚠️ Балл етарли эмас ёки саволлар нотўғри белгиланди.";
+      }
+
+      // Агар бизнес тури "озиқ-овқат дўкони" бўлса қўшимча маълумот
+      if (questions[0]?.bussiness?.types === "Озиқ-овқат дўкони") {
+        text +=
+          "\n🍞 Озиқ-овқат дўкони бизнеси ҳақида:\n" +
+          "• Асосий муваффақият омиллари: сифатли товар, арзон нарх ва доимий мижоз.\n" +
+          "• Сақлаш ва логистика тизимини яхшилаш муҳим.\n" +
+          "• Рақобатда устун бўлиш учун акция ва бонус тизимини жорий қилинг.\n" +
+          "• Маҳаллий ишлаб чиқарувчилар билан тўғридан-тўғри ҳамкорлик қилинг.\n";
+      }
+
+      setAdvice(text);
       setShowAdvice(true);
       setLoading(false);
     }, 1500);
@@ -395,15 +484,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ onReset }) => {
         <AnimatePresence mode="wait">
           {!showAdvice ? (
             <motion.div key="subscribe" variants={animations.page} exit="exit">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
-                className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
-                <FaCheck className="w-10 h-10" />
-              </motion.div>
-
               <h1 className="text-3xl font-bold text-slate-900 mb-2">
                 Тест тугади!
               </h1>
@@ -425,7 +505,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ onReset }) => {
                     }}
                     color="blue"
                   />
-
                   <SocialButton
                     icon={FaInstagram}
                     label="Instagram"
@@ -433,7 +512,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ onReset }) => {
                     onClick={() => {
                       setIgClicked(true);
                       window.open(
-                        "https://www.instagram.com/ravshan_pulatjon?igsh=ano5ZWRzc2Z6eDV4",
+                        "https://www.instagram.com/ravshan_pulatjon",
                         "_blank"
                       );
                     }}
@@ -464,8 +543,14 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ onReset }) => {
               <p className="text-slate-600 mb-6">
                 Жавобларингиз асосида тайёрланди.
               </p>
+              <CircularProgress value={calculateScore()} max={100} />
+
               <div className="bg-indigo-50/70 rounded-xl p-6 text-left text-slate-800 whitespace-pre-line border border-indigo-200/50 max-h-80 overflow-y-auto font-medium">
                 {advice}
+                {/* <div className="mt-4 font-bold text-indigo-700">
+                  Жами балл: {calculateScore()}
+                </div> */}
+
               </div>
               <button
                 onClick={onReset}
@@ -482,10 +567,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ onReset }) => {
   );
 };
 
-// ===========================
-//        MAIN COMPONENT
-// ===========================
-
 export default function TestPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { options } = useSelector((state: RootState) => state.test);
@@ -499,71 +580,70 @@ export default function TestPage() {
     "selecting" | "testing" | "finished"
   >("selecting");
 
-  const optionsArray: BusinessOption[] =
-    options && !Array.isArray(options) ? Object.values(options) : options || [];
-
   useEffect(() => {
-    if (!options || options.length === 0) {
-      dispatch(fetchOptions());
-    }
-  }, [dispatch, options]);
+    dispatch(fetchOptions());
+  }, [dispatch]);
 
-  const handleStartTest = (businessId: number) => {
-    if (businessId !== null) {
-      dispatch(submitSelection({ businessId }))
-        .unwrap()
-        .then((res) => {
-          setQuestions(Array.isArray(res) ? res : [res]);
-          setTestState("testing");
-        });
+  const handleStart = async (businessId: number) => {
+    const result = await dispatch(submitSelection({ businessId }));
+    if (submitSelection.fulfilled.match(result)) {
+      setQuestions(result.payload);
+      setTestState("testing");
     }
   };
-  const handleAnswerSelect = (answer: string) => {
+
+  const handleAnswer = (answer: string) => {
     setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: answer }));
   };
 
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentIndex((prev) => prev + 1);
     } else {
       setTestState("finished");
     }
   };
 
   const handlePrev = () => {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
   };
 
   const handleReset = () => {
-    setTestState("selecting");
+    setQuestions([]);
     setCurrentIndex(0);
     setSelectedAnswers({});
+    setTestState("selecting");
   };
 
   return (
-    <AnimatePresence mode="wait">
-      {testState === "selecting" && optionsArray.length > 0 && (
-        <WelcomeModal
-          key="modal"
-          options={optionsArray}
-          onStart={handleStartTest}
-        />
-      )}
-      {testState === "testing" && questions.length > 0 && (
-        <QuestionScreen
-          key={currentIndex}
-          question={questions[currentIndex]}
-          currentIndex={currentIndex}
-          total={questions.length}
-          selectedAnswer={selectedAnswers[currentIndex]}
-          onAnswer={handleAnswerSelect}
-          onNext={handleNext}
-          onPrev={handlePrev}
-        />
-      )}
-      {testState === "finished" && (
-        <ResultScreen key="result" onReset={handleReset} />
-      )}
-    </AnimatePresence>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-300">
+      <AnimatePresence mode="wait">
+        {testState === "selecting" && (
+          <WelcomeModal key="welcome" options={options} onStart={handleStart} />
+        )}
+        {testState === "testing" && questions.length > 0 && (
+          <QuestionScreen
+            key={currentIndex}
+            question={questions[currentIndex]}
+            currentIndex={currentIndex}
+            total={questions.length}
+            selectedAnswer={selectedAnswers[currentIndex]}
+            onAnswer={handleAnswer}
+            onNext={handleNext}
+            onPrev={handlePrev}
+          />
+        )}
+        {testState === "finished" && (
+          <ResultScreen
+            key="result"
+            onReset={handleReset}
+            questions={questions}
+            selectedAnswers={selectedAnswers}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

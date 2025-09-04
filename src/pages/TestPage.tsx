@@ -11,10 +11,32 @@ import {
   FaArrowRight,
   FaCheck,
   FaSync,
+  FaChevronLeft,
+  FaChevronRight,
+  FaSatellite,
+  FaMask, // TheaterMasks o‘rniga
+  FaTrophy,
+  FaSpider,
+  FaGlobeAmericas,
+  FaBicycle,
+  FaRocket,
+  FaBinoculars,
+  FaTheaterMasks,
+  FaStar,
+  FaCloud,
+  FaBolt,
+  FaMoon,
+  FaSun,
+  FaHeart, // kerak bo‘lsa qoldiring
 } from "react-icons/fa";
+import { RiArrowLeftSFill, RiArrowRightSFill } from "react-icons/ri";
+
+// import { GiTelescope, GiHotAirBalloon } from "react-icons/gi";
+
 import { CgSpinner } from "react-icons/cg";
 import { easeIn, easeOut } from "framer-motion";
 
+// --- INTERFACES & PROPS (No changes) ---
 interface BusinessOption {
   id: number;
   types: string;
@@ -57,15 +79,17 @@ interface SocialButtonProps {
   color: "blue" | "pink" | "green";
 }
 
+// --- ANIMATION VARIANTS (No changes) ---
 const animations: Record<string, Variants> = {
   page: {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30, scale: 0.98 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring", duration: 0.8 },
+      scale: 1,
+      transition: { type: "spring", duration: 0.7 },
     },
-    exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
+    exit: { opacity: 0, y: -30, scale: 0.98, transition: { duration: 0.3 } },
   },
   modalContainer: {
     hidden: { opacity: 0 },
@@ -81,19 +105,9 @@ const animations: Record<string, Variants> = {
     },
     exit: { scale: 0.95, opacity: 0, transition: { duration: 0.2 } },
   },
-  staggerContainer: {
-    visible: { transition: { staggerChildren: 0.07 } },
-  },
-  staggerItem: {
-    hidden: { opacity: 0, y: 15 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 500, damping: 25 },
-    },
-  },
 };
 
+// --- WELCOME MODAL COMPONENT (No changes) ---
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
   const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(
     null
@@ -187,6 +201,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
   );
 };
 
+// --- QUESTION SCREEN COMPONENT (MODIFIED) ---
 const QuestionScreen: React.FC<QuestionScreenProps> = ({
   question,
   currentIndex,
@@ -196,106 +211,117 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
   onNext,
   onPrev,
 }) => {
-  const progress = ((currentIndex + 1) / total) * 100;
+  const options = [
+    question.option_a,
+    question.option_b,
+    question.option_c,
+    question.option_d,
+  ].filter(Boolean) as string[];
+
   return (
-    <div className=" flex items-center bg-blue-200">
-      <motion.div
-        key={currentIndex}
-        variants={animations.page}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        className="bg-white rounded-3xl p-6 md:p-8 w-full max-w-2xl shadow-2xl mx-auto"
-      >
-        <div className="w-full bg-slate-200 rounded-full h-2.5 mb-6">
-          <motion.div
-            className="bg-gradient-to-r from-indigo-500 to-blue-500 h-2.5 rounded-full"
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.6, ease: "easeInOut" as any }}
-          />
-        </div>
-        <div className="text-sm font-medium text-slate-500 mb-4 flex justify-between">
-          <span>
-            Савол {currentIndex + 1} дан {total}
-          </span>
-        </div>
-        <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-8">
-          {question.question}
-        </h2>
-        <motion.div
-          variants={animations.staggerContainer}
-          initial="hidden"
-          animate="visible"
-          className="space-y-4 mb-8"
-        >
-          {(["option_a", "option_b", "option_c", "option_d"] as const).map(
-            (key) => {
-              const value = question[key];
-              if (!value) return null;
+    <motion.div
+      key={currentIndex}
+      variants={animations.page}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="flex flex-col items-center justify-center w-full px-4"
+    >
+      <div className="relative w-full max-w-xl">
+        {/* Layered borders for styling */}
+        <div className="absolute inset-0 bg-green-400 rotate-[-5deg] rounded-3xl transform -translate-y-2"></div>
+        <div className="absolute inset-0 bg-yellow-300 rotate-[5deg] rounded-3xl transform translate-y-1"></div>
+
+        <div className="relative bg-white rounded-2xl p-6 md:p-8 shadow-lg z-10">
+          <h2 className="text-xl md:text-2xl font-semibold text-slate-800 text-center mb-8 min-h-[6rem] flex items-center justify-center">
+            {question.question}
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            {options.map((value, index) => {
               const isSelected = selectedAnswer === value;
               return (
-                <motion.div
-                  key={`${currentIndex}-${key}`}
-                  variants={animations.staggerItem}
+                <motion.button
+                  key={index}
                   onClick={() => onAnswer(value)}
-                  whileHover={{ scale: 1.02, x: 4 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`cursor-pointer w-full text-left p-4 rounded-xl border-2 flex items-center transition-all duration-300 ${
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`w-full text-center p-4 rounded-xl border-2 text-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 ${
                     isSelected
-                      ? "bg-indigo-50 border-indigo-500 text-indigo-800 shadow-lg shadow-indigo-500/10"
-                      : "bg-white border-slate-200 hover:border-indigo-400 hover:shadow-md hover:shadow-indigo-500/5"
+                      ? "bg-green-500 border-green-600 text-white shadow-md"
+                      : "bg-white border-slate-300 text-slate-700 hover:border-blue-400"
                   }`}
                 >
-                  <motion.div
-                    className="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 flex-shrink-0"
-                    animate={{
-                      backgroundColor: isSelected ? "#6366F1" : "#FFFFFF",
-                      borderColor: isSelected ? "#6366F1" : "#E2E8F0",
-                    }}
-                  >
-                    {isSelected && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.1 }}
-                      >
-                        <FaCheck className="text-white text-xs" />
-                      </motion.div>
-                    )}
-                  </motion.div>
-                  <span className="font-medium text-slate-800">{value}</span>
-                </motion.div>
+                  {value}
+                </motion.button>
               );
-            }
-          )}
-        </motion.div>
-        <div className="flex justify-between items-center mt-10">
-          <motion.button
-            onClick={onPrev}
-            disabled={currentIndex === 0}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-5 py-2.5 rounded-lg flex items-center gap-2 font-semibold text-slate-600 hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <FaArrowLeft />
-            <span>Олдинги</span>
-          </motion.button>
-          <motion.button
-            onClick={onNext}
-            disabled={!selectedAnswer}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98, y: 0 }}
-            className="px-7 py-3 rounded-xl flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-semibold shadow-lg shadow-indigo-500/20 disabled:from-slate-300 disabled:to-slate-400 disabled:shadow-none disabled:cursor-not-allowed"
-          >
-            <span>{currentIndex === total - 1 ? "Тугатмоқ" : "Кейинги"}</span>
-            <FaArrowRight />
-          </motion.button>
+            })}
+          </div>
+
+          <div className="flex items-center justify-center space-x-2 text-slate-500">
+            <motion.button
+              onClick={onPrev}
+              disabled={currentIndex === 0}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-[50px] cursor-pointer disabled:opacity-30 text-yellow-500 disabled:cursor-not-allowed disabled:text-gray-500"
+            >
+              <RiArrowLeftSFill />
+            </motion.button>
+            <span className="font-bold flex gap-[7px] items-center tabular-nums">
+              <p className="text-green-500 text-4xl">{currentIndex + 1}</p>
+              <p className="text-xl">/ {total}</p>
+            </span>
+            <motion.button
+              onClick={() => {
+                if (selectedAnswer) {
+                  onNext();
+                }
+              }}
+              disabled={!selectedAnswer}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-[50px] disabled:opacity-30 cursor-pointer text-yellow-500 disabled:cursor-not-allowed"
+            >
+              <RiArrowRightSFill />
+            </motion.button>
+          </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
-const CircularProgress: React.FC<{ value: number; max: number }> = ({ value, max }) => {
+
+// --- DECORATIVE ICONS COMPONENT (NEW) ---
+const DecorativeIcons = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none">
+    {/* Asosiy ikonalar */}
+    <FaSatellite className="text-black/10 absolute top-[8%] left-[5%] text-5xl transform -rotate-12" />
+    <FaTheaterMasks className="text-black/10 absolute top-[50%] right-[8%] text-4xl" />
+    <FaTrophy className="text-black/10 absolute top-[78%] right-[12%] text-5xl" />
+    <FaSpider className="text-black/10 absolute bottom-[12%] left-[18%] text-4xl" />
+    <FaGlobeAmericas className="text-black/10 absolute bottom-[6%] left-[45%] text-6xl" />
+    <FaBicycle className="text-black/10 absolute bottom-[18%] right-[6%] text-6xl" />
+    <FaRocket className="text-black/10 absolute top-[72%] left-[4%] text-5xl transform rotate-45" />
+
+    {/* Qo‘shimcha dekorativ ikonalar */}
+    <FaBinoculars className="text-black/5 absolute top-[20%] left-[20%] text-6xl" />
+    <FaStar className="text-yellow-400/20 absolute top-[10%] right-[20%] text-4xl" />
+    {/* <FaCloud className="text-slate-500/10 absolute top-[30%] left-[70%] text-7xl" /> */}
+    <FaBolt className="text-yellow-500/10 absolute bottom-[25%] left-[30%] text-5xl rotate-12" />
+    <FaMoon className="text-indigo-500/10 absolute top-[15%] right-[40%] text-5xl" />
+    <FaSun className="text-orange-400/10 absolute bottom-[15%] right-[20%] text-6xl" />
+    <FaHeart className="text-red-500/10 absolute bottom-[30%] left-[10%] text-5xl animate-pulse" />
+    <FaInstagram className="text-pink-500/10 absolute top-[40%] left-[5%] text-4xl rotate-6" />
+    <FaTelegramPlane className="text-blue-500/10 absolute bottom-[40%] right-[10%] text-5xl -rotate-6" />
+  </div>
+);
+
+// --- OTHER COMPONENTS (No major changes) ---
+const CircularProgress: React.FC<{ value: number; max: number }> = ({
+  value,
+  max,
+}) => {
   const radius = 60;
   const stroke = 10;
   const normalizedRadius = radius - stroke * 2;
@@ -342,11 +368,9 @@ const CircularProgress: React.FC<{ value: number; max: number }> = ({ value, max
           {`${value}/${max}`}
         </text>
       </svg>
-      {/* <span className="mt-2 text-slate-600 font-medium">Жами балл</span> */}
     </div>
   );
 };
-
 
 const SocialButton: React.FC<SocialButtonProps> = ({
   icon: Icon,
@@ -435,29 +459,49 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
 
       if (score >= 25 && score <= 45) {
         text +=
-          "📊 Даража: Бошланғич даража.\n" +
-          "Сизга ҳали билим ва тажриба етишмайди.\n" +
-          "📝 Тавсия: бизнес асосларини ўрганинг ва кичик форматда бизнес бошланг.\n";
+          "📊 Даража: Бошланғич даража.\n\n" +
+          "Сиз ҳали тадбиркорлик дунёсига қадам қўйганингизда турибсиз. " +
+          "Асосий билимлар ва амалий тажриба етарли даражада эмас. " +
+          "Бу нормал ҳолат, чунки ҳар бир катта йўл кичик қадамлардан бошланади.\n\n" +
+          "📝 Тавсия: Аввало, бизнес асосларини пухта ўрганишга ҳаракат қилинг. " +
+          "Кичик лойиҳаларда иштирок этинг ёки озгина маблағ билан " +
+          "бизнес бошлаб кўринг. Шошилмасдан, босқичма-босқич тажриба орттириш " +
+          "сизга катта имкониятларни очади. Бу босқичда йўл қўйилган хатолар — " +
+          "буюк дарсларга айланади.\n";
       } else if (score >= 46 && score <= 65) {
         text +=
-          "📊 Даража: Амалиётчи даражаси.\n" +
-          "Асосий тушунчаларга эгасиз, лекин хатолар бўлади.\n" +
-          "📝 Тавсия: ментор топинг ёки бизнес бошқариш бўйича курсдан ўтинг.\n";
+          "📊 Даража: Амалиётчи даражаси.\n\n" +
+          "Сиз тадбиркорлик йўлида аввалги қадамларни босиб ўтдингиз. " +
+          "Асосий тушунчалардан хабардорсиз ва кичик бизнесни йўлга қўйишни билиб олагансиз. " +
+          "Бироқ ҳали ҳам маълум хатоларга йўл қўйишингиз мумкин. " +
+          "Бу табиий жараён, чунки билим ва тажриба орттириш узлуксиз жараёндир.\n\n" +
+          "📝 Тавсия: Бу босқичда сизга ментор — тажрибали тадбиркор маслаҳати жуда керак бўлади. " +
+          "Курслар ёки тренингларда иштирок этиш, бизнес бошқарувини ўрганиш, " +
+          "иш жараёнларини таҳлил қилиш орқали катта ютуқларга эриша оласиз. " +
+          "Шунингдек, рақобатчиларни кузатинг ва уларнинг тажрибаларидан илҳомланинг.\n";
       } else if (score >= 66 && score <= 85) {
         text +=
-          "📊 Даража: Тадбиркор даражаси.\n" +
-          "Асосий жараёнларни тушунасиз ва дўконни бошқара оласиз.\n" +
-          "📝 Тавсия: автоматлаштириш ва маркетингга эътибор беринг.\n";
+          "📊 Даража: Тадбиркор даражаси.\n\n" +
+          "Сиз аллақачон асосий жараёнларни яхши тушунасиз ва бизнесни мустақил равишда " +
+          "бошқариш қобилиятига эгасиз. Дўкон ёки хизмат кўрсатиш соҳасида ўзини намоён қилишда " +
+          "муваффақиятга эришишингиз мумкин. Ҳали айрим жиҳатларда самарадорликни ошириш имкониятлари бор.\n\n" +
+          "📝 Тавсия: Бу босқичда асосий эътиборни автоматлаштириш, маркетинг ва мижозлар билан муносабатларга қаратинг. " +
+          "Дижитал технологиялардан фойдаланиш, CRM тизимини йўлга қўйиш ва онлайн реклама " +
+          "сизга катта ютуқлар олиб келиши мумкин. Мақсадингиз — бизнесни барқарор ва кенгайтириладиган ҳолатга олиб чиқиш.\n";
       } else if (score >= 86 && score <= 100) {
         text +=
-          "📊 Даража: Профессионал даража.\n" +
-          "Сиз тармоқ дўконларини бошқаришга тайёрсиз.\n" +
-          "📝 Тавсия: брендни кучайтириш ва франшиза яратинг.\n";
+          "📊 Даража: Профессионал даража.\n\n" +
+          "Сиз тадбиркорликда юқори тажрибага эгасиз ва кўпчилик учун намуна ҳисобланасиз. " +
+          "Сиз фақатгина дўкон ёки кичик бизнесни эмас, балки бутун тармоқ дўконларини бошқаришга тайёрсиз. " +
+          "Бошқарув, молиявий режалаштириш ва стратегия бўйича билимларингиз юқори даражада.\n\n" +
+          "📝 Тавсия: Эндиликда мақсад — брендни кучайтириш ва франшиза йўналишини йўлга қўйиш. " +
+          "Жамоани кучайтириш, халқаро тажрибаларни ўрганиш ва инновацияларни жорий этиш орқали " +
+          "сиз бизнесингизни янги босқичга кўтара оласиз. Энг асосийси, ўз тажрибангизни бошқаларга " +
+          "ўргатиш орқали катта ижтимоий таъсирга эга бўласиз.\n";
       } else {
         text += "⚠️ Балл етарли эмас ёки саволлар нотўғри белгиланди.";
       }
 
-      // Агар бизнес тури "озиқ-овқат дўкони" бўлса қўшимча маълумот
       if (questions[0]?.bussiness?.types === "Озиқ-овқат дўкони") {
         text +=
           "\n🍞 Озиқ-овқат дўкони бизнеси ҳақида:\n" +
@@ -478,12 +522,17 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
       variants={animations.page}
       initial="hidden"
       animate="visible"
-      className="w-[100vw] justify-center h-[100vh] flex items-center bg-blue-200"
+      className="w-full min-h-screen flex items-center justify-center bg-[#A7D7F9] p-4"
     >
-      <div className="bg-white rounded-2xl p-8 shadow-xl text-center border border-slate-200/80">
+      <div className="bg-white w-full absolute mx-[20px] max-w-2xl rounded-2xl p-8 shadow-xl text-center border border-slate-200/80">
         <AnimatePresence mode="wait">
           {!showAdvice ? (
-            <motion.div key="subscribe" variants={animations.page} exit="exit">
+            <motion.div
+              key="subscribe"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
               <h1 className="text-3xl font-bold text-slate-900 mb-2">
                 Тест тугади!
               </h1>
@@ -536,7 +585,12 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
               </motion.button>
             </motion.div>
           ) : (
-            <motion.div key="advice" variants={animations.page}>
+            <motion.div
+              key="advice"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
               <h2 className="text-3xl font-bold text-slate-900 mb-2">
                 Сизнинг тавсияларингиз
               </h2>
@@ -547,10 +601,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
 
               <div className="bg-indigo-50/70 rounded-xl p-6 text-left text-slate-800 whitespace-pre-line border border-indigo-200/50 max-h-80 overflow-y-auto font-medium">
                 {advice}
-                {/* <div className="mt-4 font-bold text-indigo-700">
-                  Жами балл: {calculateScore()}
-                </div> */}
-
               </div>
               <button
                 onClick={onReset}
@@ -567,6 +617,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   );
 };
 
+// --- MAIN PAGE COMPONENT (MODIFIED) ---
 export default function TestPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { options } = useSelector((state: RootState) => state.test);
@@ -618,7 +669,8 @@ export default function TestPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-300">
+    <div className="min-h-screen flex items-center justify-center bg-[#A7D7F9] relative overflow-hidden font-sans">
+      <DecorativeIcons />
       <AnimatePresence mode="wait">
         {testState === "selecting" && (
           <WelcomeModal key="welcome" options={options} onStart={handleStart} />

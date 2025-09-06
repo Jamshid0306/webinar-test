@@ -4,32 +4,27 @@ import { RootState, AppDispatch } from "../store/store";
 import { fetchOptions, submitSelection } from "../store/testSlice";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
-  FaTelegramPlane,
-  FaInstagram,
-  FaChevronDown,
-  FaArrowLeft,
-  FaArrowRight,
+  GiFruitBowl,
+  GiHotMeal,
+  // GiCoffeeCup,
+  GiCupcake,
+  GiWineBottle,
+  GiShoppingCart,
+  GiChickenLeg,
+  GiChefToque,
+  GiForkKnifeSpoon,
+} from "react-icons/gi";
+import {
+  FaAppleAlt,
+  FaCarrot,
   FaCheck,
+  FaChevronDown,
+  FaIceCream,
+  FaInstagram,
   FaSync,
-  FaChevronLeft,
-  FaChevronRight,
-  FaSatellite,
-  FaMask, // TheaterMasks o‘rniga
-  FaTrophy,
-  FaSpider,
-  FaGlobeAmericas,
-  FaBicycle,
-  FaRocket,
-  FaBinoculars,
-  FaTheaterMasks,
-  FaStar,
-  FaCloud,
-  FaBolt,
-  FaMoon,
-  FaSun,
-  FaHeart, // kerak bo‘lsa qoldiring
+  FaTelegramPlane,
 } from "react-icons/fa";
-import { RiArrowLeftSFill, RiArrowRightSFill } from "react-icons/ri";
+import { MdLocalDrink } from "react-icons/md";
 
 // import { GiTelescope, GiHotAirBalloon } from "react-icons/gi";
 
@@ -202,6 +197,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
 };
 
 // --- QUESTION SCREEN COMPONENT (MODIFIED) ---
+// --- QUESTION SCREEN COMPONENT (MODIFIED) ---
 const QuestionScreen: React.FC<QuestionScreenProps> = ({
   question,
   currentIndex,
@@ -218,6 +214,8 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
     question.option_d,
   ].filter(Boolean) as string[];
 
+  const progress = ((currentIndex + 1) / total) * 100;
+
   return (
     <motion.div
       key={currentIndex}
@@ -228,11 +226,19 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
       className="flex flex-col items-center justify-center w-full px-4"
     >
       <div className="relative w-full max-w-xl">
-        {/* Layered borders for styling */}
+        {/* Layered borders */}
         <div className="absolute inset-0 bg-green-400 rotate-[-5deg] rounded-3xl transform -translate-y-2"></div>
         <div className="absolute inset-0 bg-yellow-300 rotate-[5deg] rounded-3xl transform translate-y-1"></div>
 
         <div className="relative bg-white rounded-2xl p-6 md:p-8 shadow-lg z-10">
+          {/* Progress bar */}
+          <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
+            <div
+              className="bg-yellow-400 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+
           <h2 className="text-xl md:text-2xl font-semibold text-slate-800 text-center mb-8 min-h-[6rem] flex items-center justify-center">
             {question.question}
           </h2>
@@ -246,7 +252,7 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
                   onClick={() => onAnswer(value)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className={`w-full text-center p-4 rounded-xl border-2 text-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 ${
+                  className={`w-full text-center p-4 rounded-xl border-2 text-lg font-medium transition-all duration-200 ${
                     isSelected
                       ? "bg-green-500 border-green-600 text-white shadow-md"
                       : "bg-white border-slate-300 text-slate-700 hover:border-blue-400"
@@ -258,20 +264,17 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
             })}
           </div>
 
-          <div className="flex items-center justify-center space-x-2 text-slate-500">
+          <div className="flex items-center justify-between gap-8 mt-6">
             <motion.button
               onClick={onPrev}
               disabled={currentIndex === 0}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="text-[50px] cursor-pointer disabled:opacity-30 text-yellow-500 disabled:cursor-not-allowed disabled:text-gray-500"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 rounded-full bg-yellow-400 text-white font-medium shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
             >
-              <RiArrowLeftSFill />
+              ◀ Oldingisi
             </motion.button>
-            <span className="font-bold flex gap-[7px] items-center tabular-nums">
-              <p className="text-green-500 text-4xl">{currentIndex + 1}</p>
-              <p className="text-xl">/ {total}</p>
-            </span>
+
             <motion.button
               onClick={() => {
                 if (selectedAnswer) {
@@ -279,11 +282,11 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
                 }
               }}
               disabled={!selectedAnswer}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="text-[50px] disabled:opacity-30 cursor-pointer text-yellow-500 disabled:cursor-not-allowed"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 rounded-full bg-cyan-600 text-white font-medium shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300"
             >
-              <RiArrowRightSFill />
+              Keyingisi ▶
             </motion.button>
           </div>
         </div>
@@ -292,28 +295,23 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
   );
 };
 
-// --- DECORATIVE ICONS COMPONENT (NEW) ---
 const DecorativeIcons = () => (
   <div className="absolute inset-0 z-0 pointer-events-none">
-    {/* Asosiy ikonalar */}
-    <FaSatellite className="text-black/10 absolute top-[8%] left-[5%] text-5xl transform -rotate-12" />
-    <FaTheaterMasks className="text-black/10 absolute top-[50%] right-[8%] text-4xl" />
-    <FaTrophy className="text-black/10 absolute top-[78%] right-[12%] text-5xl" />
-    <FaSpider className="text-black/10 absolute bottom-[12%] left-[18%] text-4xl" />
-    <FaGlobeAmericas className="text-black/10 absolute bottom-[6%] left-[45%] text-6xl" />
-    <FaBicycle className="text-black/10 absolute bottom-[18%] right-[6%] text-6xl" />
-    <FaRocket className="text-black/10 absolute top-[72%] left-[4%] text-5xl transform rotate-45" />
+    {/* Asosiy oziq-ovqat ikonalar */}
+    <GiFruitBowl className="text-green-400/10 absolute top-[8%] left-[5%] text-7xl" />
+    <GiHotMeal className="text-orange-400/10 absolute top-[50%] right-[8%] text-8xl" />
+    <GiCupcake className="text-pink-400/10 absolute bottom-[12%] left-[18%] text-9xl" />
+    <FaAppleAlt className="text-red-400/10 absolute bottom-[6%] left-[45%] text-8xl" />
+    <GiWineBottle className="text-purple-500/10 absolute bottom-[18%] right-[6%] text-8xl" />
+    <GiChickenLeg className="text-yellow-500/10 absolute top-[72%] left-[4%] text-8xl" />
 
     {/* Qo‘shimcha dekorativ ikonalar */}
-    <FaBinoculars className="text-black/5 absolute top-[20%] left-[20%] text-6xl" />
-    <FaStar className="text-yellow-400/20 absolute top-[10%] right-[20%] text-4xl" />
-    {/* <FaCloud className="text-slate-500/10 absolute top-[30%] left-[70%] text-7xl" /> */}
-    <FaBolt className="text-yellow-500/10 absolute bottom-[25%] left-[30%] text-5xl rotate-12" />
-    <FaMoon className="text-indigo-500/10 absolute top-[15%] right-[40%] text-5xl" />
-    <FaSun className="text-orange-400/10 absolute bottom-[15%] right-[20%] text-6xl" />
-    <FaHeart className="text-red-500/10 absolute bottom-[30%] left-[10%] text-5xl animate-pulse" />
-    <FaInstagram className="text-pink-500/10 absolute top-[40%] left-[5%] text-4xl rotate-6" />
-    <FaTelegramPlane className="text-blue-500/10 absolute bottom-[40%] right-[10%] text-5xl -rotate-6" />
+    <GiChefToque className="text-gray-400/10 absolute top-[20%] left-[20%] text-9xl" />
+    <GiForkKnifeSpoon className="text-blue-400/10 absolute top-[10%] right-[20%] text-7xl" />
+    <GiShoppingCart className="text-emerald-400/10 absolute bottom-[25%] left-[30%] text-8xl" />
+    <FaCarrot className="text-orange-500/10 absolute top-[15%] right-[40%] text-8xl" />
+    <FaIceCream className="text-pink-300/10 absolute bottom-[15%] right-[20%] text-9xl" />
+    <MdLocalDrink className="text-cyan-400/10 absolute bottom-[30%] left-[10%] text-8xl" />
   </div>
 );
 

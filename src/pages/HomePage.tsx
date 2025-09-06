@@ -11,13 +11,13 @@ export default function HomePage() {
     navigate("/auth");
   };
 
-  // Floating background circles
+  // Floating background circles - No changes needed here as they are decorative.
   const BackgroundElements = () => {
     const elements: JSX.Element[] = [];
     const colors = ["from-sky-200", "from-blue-200", "from-indigo-200"];
 
     for (let i = 0; i < 10; i++) {
-      const size = Math.random() * 150 + 100;
+      const size = Math.random() * 150 + 50; // Slightly reduced max size for mobile
       const duration = Math.random() * 8 + 6;
       const delay = Math.random() * 3;
       const color = colors[Math.floor(Math.random() * colors.length)];
@@ -33,8 +33,8 @@ export default function HomePage() {
             top: `${Math.random() * 100}%`,
           }}
           animate={{
-            x: [0, Math.random() * 150 - 75],
-            y: [0, Math.random() * 150 - 75],
+            x: [0, Math.random() * 100 - 50],
+            y: [0, Math.random() * 100 - 50],
             scale: [0.8, 1.2, 0.8],
             rotate: [0, 360],
           }}
@@ -53,15 +53,16 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center px-6">
+    // Main container optimized for mobile
+    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center px-4 sm:px-6">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50">
         <BackgroundElements />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-2xl text-center space-y-10">
-        {/* Logo */}
+      {/* Content wrapper with adjusted spacing for mobile */}
+      <div className="relative z-10 w-full max-w-md text-center space-y-8">
+        {/* Logo with reduced size for mobile */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -75,11 +76,13 @@ export default function HomePage() {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-xl"
+            // Smaller logo size and border-radius for mobile
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-xl"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 md:h-12 md:w-12 text-white"
+              // Smaller icon size
+              className="h-8 w-8 sm:h-10 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -97,16 +100,17 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
 
-        {/* Title */}
+        {/* Title with responsive font size */}
         <motion.h1
-          className="text-4xl md:text-5xl font-extrabold text-gray-800"
+          className="text-3xl sm:text-4xl font-extrabold text-gray-800"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
           {t("welcome_title", "Вебинар платформасига")}
           <motion.span
-            className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600"
+            // Reduced top margin for a tighter look
+            className="block mt-1 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600"
             animate={{
               backgroundPosition: ["0% 50%", "100% 50%"],
             }}
@@ -122,8 +126,9 @@ export default function HomePage() {
           </motion.span>
         </motion.h1>
 
+        {/* Description with more appropriate mobile font size */}
         <motion.p
-          className="text-gray-600 text-lg max-w-lg mx-auto px-4"
+          className="text-gray-600 text-base max-w-sm mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
@@ -134,13 +139,14 @@ export default function HomePage() {
           )}
         </motion.p>
 
-        {/* Action Card */}
+        {/* Action Card with reduced padding and spacing for mobile */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="bg-white/90 shadow-2xl rounded-3xl p-8 space-y-6 border border-gray-100 backdrop-blur"
+          className="bg-white/90 shadow-2xl rounded-2xl p-6 space-y-5 border border-gray-100 backdrop-blur"
         >
+          {/* Button optimized for mobile tap targets and text size */}
           <motion.button
             whileHover={{
               scale: 1.03,
@@ -149,11 +155,11 @@ export default function HomePage() {
             }}
             whileTap={{ scale: 0.97 }}
             onClick={navigateTo}
-            className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 bg-[length:200%_200%] text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-500 flex items-center justify-center gap-3"
+            className="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 bg-[length:200%_200%] text-white py-3 px-5 rounded-lg font-semibold text-base sm:text-lg transition-all duration-500 flex items-center justify-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -168,6 +174,7 @@ export default function HomePage() {
             {t("login", "Кириш")}
           </motion.button>
 
+          {/* Text is already small, which is good for mobile */}
           <p className="text-sm text-gray-500">
             {t("terms_notice", "Ҳисобга кириш орқали сиз")}{" "}
             <a href="#" className="text-blue-600 hover:underline font-medium">
@@ -186,7 +193,7 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="text-gray-500 text-sm"
+          className="text-gray-500 text-xs sm:text-sm"
         >
           © {new Date().getFullYear()} {t("company_name", "Webinar Platform")}.{" "}
           {t("all_rights", "Барча ҳуқуқлар ҳимояланган")}.

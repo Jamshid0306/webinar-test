@@ -13,14 +13,40 @@ import {
   GiChickenLeg,
   GiChefToque,
   GiForkKnifeSpoon,
+  GiBread,
+  GiCheeseWedge,
+  GiMilkCarton,
+  GiTomato,
+  GiBanana,
+  GiWaterBottle,
+  GiBabyBottle,
+  GiToyMallet,
+  GiClothes,
+  GiUnderwearShorts,
+  GiSocks,
+  GiSewingNeedle,
+  GiFrenchFries,
+  GiHamburger,
+  GiPizzaSlice,
+  GiSodaCan,
+  GiDonut,
+  GiNoodles,
+  GiSlicedBread,
 } from "react-icons/gi";
 import {
+  FaAd,
   FaAppleAlt,
+  FaBullhorn,
   FaCarrot,
+  FaChartLine,
   FaCheck,
   FaChevronDown,
+  FaEnvelopeOpenText,
+  FaGlobe,
   FaIceCream,
   FaInstagram,
+  FaLaptopCode,
+  FaPaintBrush,
   FaSync,
   FaTelegramPlane,
 } from "react-icons/fa";
@@ -36,7 +62,9 @@ interface BusinessOption {
   id: number;
   types: string;
 }
-
+type DecorativeIconsProps = {
+  businessId: number | null;
+};
 interface Question {
   id: number;
   question: string;
@@ -102,12 +130,18 @@ const animations: Record<string, Variants> = {
   },
 };
 
-// --- WELCOME MODAL COMPONENT (No changes) ---
+const businessImages: Record<number, string> = {
+  1: "/food.webp",
+  2: "/digital.webp",
+  3: "/kids-clothes.jpg",
+  4: "/food.jpg",
+};
+
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
   const [selectedBusinessId, setSelectedBusinessId] = useState<number | null>(
     null
   );
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   return (
     <motion.div
       variants={{
@@ -128,7 +162,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
           transition: { type: "spring", stiffness: 300, damping: 25 },
         }}
         exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.2 } }}
-        className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 w-full max-w-md shadow-2xl border border-white/30"
+        className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 w-full max-w-2xl shadow-2xl border border-white/30"
       >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">
@@ -136,50 +170,31 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
           </h2>
           <p className="text-slate-600">Бошлаш учун, бизнес турини танланг.</p>
         </div>
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full flex justify-between items-center bg-slate-100/80 text-slate-800 px-5 py-3.5 rounded-xl border border-slate-200/80 hover:border-blue-400 transition-all"
-          >
-            <span className="font-medium">
-              {selectedBusinessId !== null
-                ? options.find((opt) => opt.id === selectedBusinessId)?.types
-                : "Бизнес турини танланг"}
-            </span>
-            <FaChevronDown
-              className={`transition-transform duration-300 ${
-                dropdownOpen ? "rotate-180" : ""
+
+        {/* Bizneslar card + rasm */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {options.map((opt) => (
+            <motion.div
+              key={opt.id}
+              onClick={() => setSelectedBusinessId(opt.id)}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`cursor-pointer rounded-2xl border-2 shadow-sm overflow-hidden transition-all ${
+                selectedBusinessId === opt.id
+                  ? "bg-blue-500 text-white border-blue-600 shadow-md"
+                  : "bg-white text-slate-700 border-slate-200 hover:border-blue-400"
               }`}
-            />
-          </button>
-          <AnimatePresence>
-            {dropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0, transition: { duration: 0.25 } }}
-                exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
-                className="absolute top-full left-0 mt-2 w-full bg-white rounded-xl shadow-lg z-50 overflow-auto max-h-60 border border-slate-200"
-              >
-                {options.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => {
-                      setSelectedBusinessId(opt.id);
-                      setDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-5 py-3 transition-colors text-sm font-medium ${
-                      selectedBusinessId === opt.id
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-slate-700 hover:bg-slate-50"
-                    }`}
-                  >
-                    {opt.types}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+            >
+              <img
+                src={businessImages[opt.id] || "/images/default.jpg"}
+                alt={opt.types}
+                className="w-full h-28 object-cover"
+              />
+              <div className="p-3 text-center font-medium">{opt.types}</div>
+            </motion.div>
+          ))}
         </div>
+
         <motion.button
           disabled={selectedBusinessId === null}
           onClick={() =>
@@ -196,8 +211,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
   );
 };
 
-// --- QUESTION SCREEN COMPONENT (MODIFIED) ---
-// --- QUESTION SCREEN COMPONENT (MODIFIED) ---
 const QuestionScreen: React.FC<QuestionScreenProps> = ({
   question,
   currentIndex,
@@ -225,6 +238,7 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
       exit="exit"
       className="flex flex-col items-center justify-center w-full px-4"
     >
+      <DecorativeIcons businessId={question.bussiness.id} />{" "}
       <div className="relative w-full max-w-xl">
         {/* Layered borders */}
         <div className="absolute inset-0 bg-green-400 rotate-[-5deg] rounded-3xl transform -translate-y-2"></div>
@@ -234,7 +248,7 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
           {/* Progress bar */}
           <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
             <div
-              className="bg-yellow-400 h-3 rounded-full transition-all duration-300"
+              className="bg-green-400 h-3 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -295,25 +309,81 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
   );
 };
 
-const DecorativeIcons = () => (
-  <div className="absolute inset-0 z-0 pointer-events-none">
-    {/* Asosiy oziq-ovqat ikonalar */}
-    <GiFruitBowl className="text-green-400/10 absolute top-[8%] left-[5%] text-7xl" />
-    <GiHotMeal className="text-orange-400/10 absolute top-[50%] right-[8%] text-8xl" />
-    <GiCupcake className="text-pink-400/10 absolute bottom-[12%] left-[18%] text-9xl" />
-    <FaAppleAlt className="text-red-400/10 absolute bottom-[6%] left-[45%] text-8xl" />
-    <GiWineBottle className="text-purple-500/10 absolute bottom-[18%] right-[6%] text-8xl" />
-    <GiChickenLeg className="text-yellow-500/10 absolute top-[72%] left-[4%] text-8xl" />
 
-    {/* Qo‘shimcha dekorativ ikonalar */}
-    <GiChefToque className="text-gray-400/10 absolute top-[20%] left-[20%] text-9xl" />
-    <GiForkKnifeSpoon className="text-blue-400/10 absolute top-[10%] right-[20%] text-7xl" />
-    <GiShoppingCart className="text-emerald-400/10 absolute bottom-[25%] left-[30%] text-8xl" />
-    <FaCarrot className="text-orange-500/10 absolute top-[15%] right-[40%] text-8xl" />
-    <FaIceCream className="text-pink-300/10 absolute bottom-[15%] right-[20%] text-9xl" />
-    <MdLocalDrink className="text-cyan-400/10 absolute bottom-[30%] left-[10%] text-8xl" />
-  </div>
-);
+const DecorativeIcons: React.FC<DecorativeIconsProps> = ({ businessId }) => {
+  if (businessId === 1) {
+    // 🍏 Oziq-ovqat do‘koni
+    return (
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <GiFruitBowl className="text-green-400/10 absolute top-[8%] left-[5%] text-7xl" />
+        <GiShoppingCart className="text-emerald-400/10 absolute bottom-[25%] left-[30%] text-8xl" />
+        <FaCarrot className="text-orange-500/10 absolute top-[15%] right-[40%] text-8xl" />
+        <FaAppleAlt className="text-red-400/10 absolute bottom-[6%] left-[45%] text-8xl" />
+        <GiBread className="text-yellow-400/10 absolute top-[20%] left-[10%] text-7xl" />
+        <GiCheeseWedge className="text-orange-400/10 absolute bottom-[15%] right-[15%] text-8xl" />
+        <GiMilkCarton className="text-blue-400/10 absolute top-[40%] right-[10%] text-7xl" />
+        <GiTomato className="text-red-400/10 absolute bottom-[20%] left-[15%] text-7xl" />
+        <GiBanana className="text-yellow-400/10 absolute top-[10%] right-[25%] text-7xl" />
+        <GiWaterBottle className="text-cyan-400/10 absolute bottom-[30%] left-[5%] text-8xl" />
+      </div>
+    );
+  }
+
+  if (businessId === 2) {
+    // 💻 Digital agentlik
+    return (
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <FaInstagram className="text-pink-400/10 absolute top-[15%] left-[10%] text-8xl" />
+        <FaTelegramPlane className="text-blue-400/10 absolute top-[20%] right-[15%] text-7xl" />
+        <FaSync className="text-green-400/10 absolute bottom-[25%] left-[20%] text-9xl" />
+        <FaLaptopCode className="text-gray-400/10 absolute top-[30%] left-[25%] text-8xl" />
+        <FaChartLine className="text-blue-500/10 absolute bottom-[20%] right-[20%] text-8xl" />
+        <FaGlobe className="text-indigo-400/10 absolute top-[10%] right-[25%] text-7xl" />
+        <FaPaintBrush className="text-purple-400/10 absolute bottom-[30%] left-[35%] text-8xl" />
+        <FaBullhorn className="text-orange-400/10 absolute top-[40%] right-[5%] text-8xl" />
+        <FaAd className="text-yellow-400/10 absolute bottom-[10%] left-[10%] text-7xl" />
+        <FaEnvelopeOpenText className="text-red-400/10 absolute top-[5%] left-[40%] text-7xl" />
+      </div>
+    );
+  }
+
+  if (businessId === 3) {
+    // 👕 Bolalar kiyim do‘koni
+    return (
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <FaIceCream className="text-pink-300/10 absolute bottom-[15%] right-[20%] text-9xl" />
+        <GiCupcake className="text-pink-400/10 absolute bottom-[12%] left-[18%] text-9xl" />
+        <GiShoppingCart className="text-purple-400/10 absolute top-[20%] right-[25%] text-8xl" />
+        <GiBabyBottle className="text-blue-400/10 absolute top-[30%] left-[15%] text-7xl" />
+        <GiToyMallet className="text-orange-400/10 absolute bottom-[20%] right-[10%] text-8xl" />
+        <GiClothes className="text-indigo-400/10 absolute bottom-[30%] left-[20%] text-8xl" />
+        <GiUnderwearShorts className="text-pink-400/10 absolute top-[5%] left-[30%] text-7xl" />
+        <GiSocks className="text-green-400/10 absolute top-[40%] right-[20%] text-7xl" />
+        <GiSewingNeedle className="text-gray-400/10 absolute bottom-[10%] left-[40%] text-8xl" />
+      </div>
+    );
+  }
+
+  if (businessId === 4) {
+    // 🍔 Fast food restoran
+    return (
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <GiHotMeal className="text-orange-400/10 absolute top-[50%] right-[8%] text-8xl" />
+        <GiChickenLeg className="text-yellow-500/10 absolute top-[72%] left-[4%] text-8xl" />
+        <GiWineBottle className="text-purple-500/10 absolute bottom-[18%] right-[6%] text-8xl" />
+        <GiFrenchFries className="text-yellow-400/10 absolute top-[10%] left-[10%] text-8xl" />
+        <GiHamburger className="text-orange-500/10 absolute bottom-[25%] right-[25%] text-8xl" />
+        <GiPizzaSlice className="text-red-400/10 absolute top-[20%] right-[30%] text-8xl" />
+        <GiSodaCan className="text-blue-400/10 absolute bottom-[20%] left-[20%] text-7xl" />
+        <GiDonut className="text-pink-400/10 absolute top-[15%] left-[40%] text-8xl" />
+        <GiNoodles className="text-green-400/10 absolute bottom-[30%] right-[15%] text-7xl" />
+        {/* <GiSlicedBread className="text-brown-400/10 absolute top-[5%] left-[25%] text-7xl" /> */}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 // --- OTHER COMPONENTS (No major changes) ---
 const CircularProgress: React.FC<{ value: number; max: number }> = ({
@@ -668,7 +738,6 @@ export default function TestPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#A7D7F9] relative overflow-hidden font-sans">
-      <DecorativeIcons />
       <AnimatePresence mode="wait">
         {testState === "selecting" && (
           <WelcomeModal key="welcome" options={options} onStart={handleStart} />

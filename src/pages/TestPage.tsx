@@ -152,7 +152,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="fixed inset-0 bg-gradient-to-r from-blue-300/60 via-blue-100/40 to-blue-300/50 backdrop-blur-lg flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-gradient-to-r from-blue-300/60 via-blue-100/40 to-blue-300/50 backdrop-blur-lg flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -162,24 +162,25 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
           transition: { type: "spring", stiffness: 300, damping: 25 },
         }}
         exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.2 } }}
-        className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 w-full max-w-2xl shadow-2xl border border-white/30"
+        className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-md sm:max-w-xl md:max-w-2xl shadow-2xl border border-white/30 max-h-screen overflow-y-auto"
       >
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
             Тахлилга хуш келибсиз!
           </h2>
-          <p className="text-slate-600">Бошлаш учун, бизнес турини танланг.</p>
+          <p className="text-slate-600 text-sm sm:text-base">
+            Бошлаш учун, бизнес турини танланг.
+          </p>
         </div>
 
-        {/* Bizneslar card + rasm */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {options.map((opt) => (
             <motion.div
               key={opt.id}
               onClick={() => setSelectedBusinessId(opt.id)}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className={`cursor-pointer rounded-2xl border-2 shadow-sm overflow-hidden transition-all ${
+              className={`cursor-pointer rounded-xl sm:rounded-2xl border-2 shadow-sm overflow-hidden transition-all ${
                 selectedBusinessId === opt.id
                   ? "bg-blue-500 text-white border-blue-600 shadow-md"
                   : "bg-white text-slate-700 border-slate-200 hover:border-blue-400"
@@ -188,9 +189,11 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
               <img
                 src={businessImages[opt.id] || "/images/default.jpg"}
                 alt={opt.types}
-                className="w-full h-28 object-cover"
+                className="w-full h-24 sm:h-28 md:h-32 object-cover"
               />
-              <div className="p-3 text-center font-medium">{opt.types}</div>
+              <div className="p-2 sm:p-3 text-center font-medium text-sm sm:text-base">
+                {opt.types}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -202,7 +205,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
           }
           whileHover={{ scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.97, y: 0 }}
-          className="w-full mt-8 py-3.5 rounded-xl text-white font-semibold transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-700 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20 disabled:shadow-none"
+          className="w-full mt-6 sm:mt-8 py-3 rounded-lg sm:rounded-xl text-white font-semibold transition-all duration-300 bg-gradient-to-r from-blue-500 to-blue-700 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20 disabled:shadow-none text-sm sm:text-base"
         >
           Тестни бошланг
         </motion.button>
@@ -308,7 +311,6 @@ const QuestionScreen: React.FC<QuestionScreenProps> = ({
     </motion.div>
   );
 };
-
 
 const DecorativeIcons: React.FC<DecorativeIconsProps> = ({ businessId }) => {
   if (businessId === 1) {

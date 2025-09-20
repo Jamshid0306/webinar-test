@@ -126,18 +126,6 @@ export default function HomePage() {
           </motion.span>
         </motion.h1>
 
-        {/* Description with more appropriate mobile font size */}
-        <motion.p
-          className="text-gray-600 text-base max-w-sm mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
-        >
-          {t(
-            "welcome_description",
-            "Профессионал вебинар платформамизда билим ва тажриба алмашиш учун ҳисобингизга киринг"
-          )}
-        </motion.p>
 
         {/* Action Card with reduced padding and spacing for mobile */}
         <motion.div

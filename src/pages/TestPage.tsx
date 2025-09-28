@@ -166,7 +166,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ options, onStart }) => {
       >
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
-            Тахлилга хуш келибсиз!
+            Тестга хуш келибсиз!
           </h2>
           <p className="text-slate-600 text-sm sm:text-base">
             Бошлаш учун, бизнес турини танланг.

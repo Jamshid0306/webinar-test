@@ -30,8 +30,6 @@ export default function RegisterForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Foydalanuvchi barcha inputlarni to'ldirganini tekshirish
     if (!username || !phone_number || !password) {
       dispatch(
         setNotification({
@@ -42,16 +40,12 @@ export default function RegisterForm() {
       return;
     }
 
-    // Agar barcha maydonlar to'ldirilgan bo'lsa, alert yoki notification ko'rsatish
     dispatch(
       setNotification({
         message: "Ro‘yxatdan o‘tish muvaffaqiyatli!",
         type: "success",
       })
     );
-
-    // Backendga so‘rov yuborilmaydi
-    // navigate("/auth"); // agar istasangiz keyingi sahifaga o‘tish mumkin
   };
 
   return (

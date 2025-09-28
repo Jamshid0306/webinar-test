@@ -131,10 +131,10 @@ export default function UserFormV2() {
                   <option value="" disabled>
                     Ёшингизни танланг
                   </option>
-                  <option value="18-21">18 - 21 ёш</option>
-                  <option value="21-25">21 - 25 ёш</option>
-                  <option value="25-30">25 - 30 ёш</option>
-                  <option value="30+">30+ ёш</option>
+                  <option value="18-21">20 - 30 ёш</option>
+                  <option value="21-25">30 - 40 ёш</option>
+                  <option value="25-30">40 - 45 ёш</option>
+                  <option value="30+">45+ ёш</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
                   <svg

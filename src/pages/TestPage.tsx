@@ -131,7 +131,7 @@ const animations: Record<string, Variants> = {
 };
 
 const businessImages: Record<number, string> = {
-  1: "/food.webp",
+  1: "/food-business.jpg",
   2: "/digital.webp",
   3: "/kids-clothes.jpg",
   4: "/food.jpg",
@@ -387,7 +387,6 @@ const DecorativeIcons: React.FC<DecorativeIconsProps> = ({ businessId }) => {
   return null;
 };
 
-// --- OTHER COMPONENTS (No major changes) ---
 const CircularProgress: React.FC<{ value: number; max: number }> = ({
   value,
   max,
@@ -610,8 +609,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
 
               <div className="bg-slate-50/80 p-6 rounded-xl border border-slate-200 mb-8">
                 <p className="text-slate-700 mb-4">
-                  Шахсий маслахатларингизни олиш учун каналларимизга обуна
-                  бўлинг:
+                  Тест натижаларингизни олиш учун каналларимизга обуна бўлинг:
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <SocialButton
@@ -650,7 +648,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                 {loading ? (
                   <CgSpinner className="animate-spin text-2xl mx-auto" />
                 ) : (
-                  "Шахсий маслахат олинг"
+                  "Тест натижангизни олинг"
                 )}
               </motion.button>
             </motion.div>

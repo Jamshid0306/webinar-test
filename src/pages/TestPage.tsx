@@ -101,8 +101,6 @@ interface SocialButtonProps {
   onClick: () => void;
   color: "blue" | "pink" | "green";
 }
-
-// --- ANIMATION VARIANTS (No changes) ---
 const animations: Record<string, Variants> = {
   page: {
     hidden: { opacity: 0, y: 30, scale: 0.98 },
@@ -685,12 +683,11 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   );
 };
 
-// --- MAIN PAGE COMPONENT (MODIFIED) ---
 export default function TestPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { options } = useSelector((state: RootState) => state.test);
 
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<{
     [key: number]: string;
@@ -703,7 +700,9 @@ export default function TestPage() {
     dispatch(fetchOptions());
   }, [dispatch]);
 
+  // --- START TEST ---
   const handleStart = async (businessId: number) => {
+    localStorage.setItem("welcomeModalSeen", "true");
     const result = await dispatch(submitSelection({ businessId }));
     if (submitSelection.fulfilled.match(result)) {
       setQuestions(result.payload);
@@ -711,10 +710,12 @@ export default function TestPage() {
     }
   };
 
+  // --- ANSWER ---
   const handleAnswer = (answer: string) => {
     setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: answer }));
   };
 
+  // --- NEXT QUESTION ---
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
@@ -723,18 +724,29 @@ export default function TestPage() {
     }
   };
 
+  // --- PREVIOUS QUESTION ---
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
     }
   };
 
+  // --- RESET TEST ---
   const handleReset = () => {
     setQuestions([]);
     setCurrentIndex(0);
     setSelectedAnswers({});
     setTestState("selecting");
+    localStorage.removeItem("welcomeModalSeen");
   };
+
+  // --- AUTO START IF USER ALREADY SAW MODAL ---
+  useEffect(() => {
+    const alreadyStarted = localStorage.getItem("welcomeModalSeen");
+    if (alreadyStarted === "true" && testState === "selecting") {
+      setTestState("testing");
+    }
+  }, [testState]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#A7D7F9] relative overflow-hidden font-sans">
@@ -742,6 +754,7 @@ export default function TestPage() {
         {testState === "selecting" && (
           <WelcomeModal key="welcome" options={options} onStart={handleStart} />
         )}
+
         {testState === "testing" && questions.length > 0 && (
           <QuestionScreen
             key={currentIndex}
@@ -754,6 +767,7 @@ export default function TestPage() {
             onPrev={handlePrev}
           />
         )}
+
         {testState === "finished" && (
           <ResultScreen
             key="result"

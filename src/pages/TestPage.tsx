@@ -742,19 +742,35 @@ export default function TestPage() {
 
   // --- On mount ---
   useEffect(() => {
-    checkWelcomeState();
-  }, [testState]);
+    const checkWelcomeState = () => {
+      const seen = localStorage.getItem("welcomeModalSeen");
+      if (seen === "true" && testState === "selecting") {
+        setTestState("testing");
+      }
+    };
 
-  // --- When user returns from another tab/app ---
-  useEffect(() => {
+    // ✅ Dastlab sahifa yuklanganda tekshirish
+    checkWelcomeState();
+
+    // ✅ Sahifa fokusga qaytganda tekshirish (masalan, Telegram/Instagramdan qaytish)
+    const handleFocus = () => {
+      checkWelcomeState();
+    };
+
+    // ✅ Sahifa ko‘rinish o‘zgarishida ham tekshirish
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
         checkWelcomeState();
       }
     };
+
+    window.addEventListener("focus", handleFocus);
     document.addEventListener("visibilitychange", handleVisibility);
-    return () =>
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
       document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [testState]);
 
   return (

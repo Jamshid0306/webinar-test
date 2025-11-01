@@ -475,7 +475,6 @@ const SocialButton: React.FC<SocialButtonProps> = ({
   return (
     <a
       href="#"
-      target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}
       className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border-2 font-semibold transition-all duration-300 ${

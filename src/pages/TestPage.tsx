@@ -616,7 +616,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                     clicked={tgClicked}
                     onClick={() => {
                       setTgClicked(true);
-                      window.open("https://t.me/ravshanpulatjon", "_blank");
+                      window.open("https://t.me/ravshanpulatjon");
                     }}
                     color="blue"
                   />
@@ -626,10 +626,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                     clicked={igClicked}
                     onClick={() => {
                       setIgClicked(true);
-                      window.open(
-                        "https://www.instagram.com/ravshan_pulatjon",
-                        "_blank"
-                      );
+                      window.open("https://www.instagram.com/ravshan_pulatjon");
                     }}
                     color="pink"
                   />

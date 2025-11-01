@@ -700,7 +700,7 @@ export default function TestPage() {
     dispatch(fetchOptions());
   }, [dispatch]);
 
-  // --- START TEST ---
+  // --- Start test ---
   const handleStart = async (businessId: number) => {
     localStorage.setItem("welcomeModalSeen", "true");
     const result = await dispatch(submitSelection({ businessId }));
@@ -710,12 +710,12 @@ export default function TestPage() {
     }
   };
 
-  // --- ANSWER ---
+  // --- Answer handler ---
   const handleAnswer = (answer: string) => {
     setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: answer }));
   };
 
-  // --- NEXT QUESTION ---
+  // --- Navigation ---
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
@@ -723,15 +723,11 @@ export default function TestPage() {
       setTestState("finished");
     }
   };
-
-  // --- PREVIOUS QUESTION ---
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex((prev) => prev - 1);
   };
 
-  // --- RESET TEST ---
+  // --- Reset test ---
   const handleReset = () => {
     setQuestions([]);
     setCurrentIndex(0);
@@ -740,12 +736,29 @@ export default function TestPage() {
     localStorage.removeItem("welcomeModalSeen");
   };
 
-  // --- AUTO START IF USER ALREADY SAW MODAL ---
-  useEffect(() => {
-    const alreadyStarted = localStorage.getItem("welcomeModalSeen");
-    if (alreadyStarted === "true" && testState === "selecting") {
+  // --- Check if modal already seen ---
+  const checkWelcomeState = () => {
+    const seen = localStorage.getItem("welcomeModalSeen");
+    if (seen === "true" && testState === "selecting") {
       setTestState("testing");
     }
+  };
+
+  // --- On mount ---
+  useEffect(() => {
+    checkWelcomeState();
+  }, [testState]);
+
+  // --- When user returns from another tab/app ---
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        checkWelcomeState();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
   }, [testState]);
 
   return (
